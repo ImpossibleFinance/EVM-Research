@@ -1,0 +1,29 @@
+body {
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: auto ; /* Resize the background image to cover the entire container */
+    background-color: #171730;
+}
+
+.header-description {
+    color:blueviolet;
+    margin: 4px auto;
+    text-align: center;
+    max-width: 400px;
+}
+
+.header-title {
+    color:blueviolet;
+    margin: 4px auto;
+    text-align: center;
+    max-width: 500px;
+    font-family: "Verdana", sans-serif;
+}
+
+.header-title::before {
+    content: '';
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    background: url(favicon.ico) center 0 no-repeat;
+}

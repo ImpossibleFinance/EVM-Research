@@ -1,0 +1,37 @@
+[
+    {
+      "chain_name": "Ethereum",
+      "chains_api": "etherscan.io",
+      "colors": "#0ABABD"
+    },
+    {
+        "chain_name": "BSC Chain",
+        "chains_api": "bscscan.com",
+        "colors": "#D5E11A"
+    },
+    {
+        "chain_name": "Avalanche",
+        "chains_api": "snowtrace.io",
+        "colors": "#F3190B"
+    },
+    {
+        "chain_name": "Polygon",
+        "chains_api": "polygonscan.com",
+        "colors": "#000CFF"
+    },
+    {
+        "chain_name": "Arbitrum",
+        "chains_api": "arbiscan.io",
+        "colors": "#5A81FC"
+    },
+    {
+        "chain_name": "Optimism",
+        "chains_api": "optimistic.etherscan.io",
+        "colors": "#FE7171"
+    },
+    {
+        "chain_name": "Gnosis Chain",
+        "chains_api": "gnosisscan.io",
+        "colors": "#A09D9D"
+    }
+]
