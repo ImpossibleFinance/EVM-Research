@@ -20,7 +20,7 @@ def transactions_by_chain_by_time():
             orientation='h',
             name = 'Last ' + _columns[x][:3],
             marker_color = _color[x],
-            text = ["%.2f" %(v/1e6) + 'M' for v in data[_columns[x]]],
+            text = ['Last ' + _columns[x][:3] + ' : ' + "%.2f" %(v/1e6) + 'M' for v in data[_columns[x]]],
             textposition = 'inside'
         ))
 

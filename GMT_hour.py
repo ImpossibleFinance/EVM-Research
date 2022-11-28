@@ -14,12 +14,7 @@ def gmt_hour():
     data = data_by_url(((list(filter(lambda x:x["api_name"]=="GMT Hour",api_config)))[0]["chains_api"]))
     chains = data["Chain"].unique()
 
-    fig = make_subplots(
-        rows = 1, 
-        cols = 2, 
-        column_widths = [0.8, 0.2],
-        specs=[[{'type':'xy'}, {'type':'xy'}]]
-    )
+    fig = go.Figure()
 
     for chain in chains:
         data_chain = data[data["Chain"] == chain]
@@ -28,8 +23,7 @@ def gmt_hour():
             y = data_chain["Sum of transactions"],
             name = chain,
             marker_color = ((list(filter(lambda x:x["chain_name"]==chain,chains_config)))[0]["colors"])
-            ), 
-            row = 1, col = 1)
+            ))
 
     fig.update_layout(
         title = "Distribution of EVM Transactions by GMT hour", 
@@ -38,10 +32,11 @@ def gmt_hour():
         height = 500,
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
-        font = dict(color = 'white')
+        font = dict(color = 'white'),
+        showlegend = False
     )
 
     f.close()
     f2.close()
 
-    return fig
+    return fig, data

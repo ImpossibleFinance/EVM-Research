@@ -6,17 +6,24 @@ body {
 }
 
 .header-description {
-    color:blueviolet;
+    color:white;
     margin: 4px auto;
     text-align: center;
-    max-width: 400px;
+    max-width: 600px;
+    font-weight: bold;
+    font-family: "Verdana", sans-serif;
+}
+
+.header-description-if {
+    color:violet;
 }
 
 .header-title {
-    color:blueviolet;
-    margin: 4px auto;
     text-align: center;
-    max-width: 500px;
+    font-weight: bold;
+    color: transparent;
+    background-clip: text;
+    background-image: linear-gradient(30deg, #9b07f0, aqua);
     font-family: "Verdana", sans-serif;
 }
 
@@ -26,4 +33,11 @@ body {
     height: 30px;
     display: inline-block;
     background: url(favicon.ico) center 0 no-repeat;
+}
+
+.description-main {
+    text-align: center;
+    color:white;
+    margin: 4px auto;
+    max-width: 1200px;
 }
