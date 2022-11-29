@@ -4,10 +4,10 @@ from Data_API import *
 
 
 def transactions_by_chain_by_time():
-    f = open('api_config.json')
+    f = open('requests_config.json')
     api_config = json.load(f)
 
-    data = data_by_url(((list(filter(lambda x:x["api_name"]=="Txs by time and chain",api_config)))[0]["chains_api"]))
+    data = data_by_url(((list(filter(lambda x:x["api_name"] == "Distribution by time and chain",api_config)))[0]["chains_api"]))
 
     fig = go.Figure()
     _columns = ['1M Value', '3M Value', '6M Value', '1Y Value']

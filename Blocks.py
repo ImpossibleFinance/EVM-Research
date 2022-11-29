@@ -6,14 +6,11 @@ from plotly import tools
 from Data_API import *
 
 
-def blocks():
-    f = open('api_config.json')
-    api_config = json.load(f)
+def blocks(data):
 
-    f2 = open('chains_config.json')
-    chains_config = json.load(f2)
+    f = open('chains_config.json')
+    chains_config = json.load(f)
 
-    data = data_by_url(((list(filter(lambda x:x["api_name"]=="Blocks",api_config)))[0]["chains_api"]))
 
     chains = data["Chain"].unique()
 
@@ -50,7 +47,8 @@ def blocks():
         x = todays_data['Chain'],
         y = todays_data['Block time'],
         name = '',
-        marker_color = '#0CFF00'
+        marker_color = '#0CFF00',
+        showlegend=False
     ), row = 1, col = 1)
 
     fig.update_layout(
@@ -60,7 +58,6 @@ def blocks():
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
         font = dict(color = 'white')
-        #template = 'plotly_dark'
     )
 
     fig2.update_layout(
@@ -71,11 +68,9 @@ def blocks():
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
         font = dict(color = 'white')
-        #template = 'plotly_dark'
     )
 
     fig2.update_xaxes(
-        #rangeslider_visible=True,
         rangeselector=dict(
             buttons=list([
                 dict(count=1, label="1m", step="month", stepmode="backward"),
@@ -90,6 +85,5 @@ def blocks():
     
 
     f.close()
-    f2.close()
 
     return fig, fig2

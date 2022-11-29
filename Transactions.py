@@ -19,15 +19,12 @@ def txs_distribution(data):
     A = A.reset_index(drop=True)
     return A
 
-def transactions():
-    f = open('api_config.json')
-    api_config = json.load(f)
+def transactions(data):
 
-    f2 = open('chains_config.json')
-    chains_config = json.load(f2)
+    f = open('chains_config.json')
+    chains_config = json.load(f)
 
-    data = data_by_url(((list(filter(lambda x:x["api_name"]=="Transactions",api_config)))[0]["chains_api"]))
-    chains = data["Chain"].unique()
+    chains = data['Chain'].unique()
 
     res_distribution = (txs_distribution(data))
 
@@ -81,10 +78,8 @@ def transactions():
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
         font = dict(color = 'white')
-        #template = 'plotly_dark'
     )
     fig.update_xaxes(
-        #rangeslider_visible=True,
         rangeselector=dict(
             buttons=list([
                 dict(count=1, label="1m", step="month", stepmode="backward"),
@@ -131,6 +126,5 @@ def transactions():
             ))
 
     f.close()
-    f2.close()
 
     return fig, fig2

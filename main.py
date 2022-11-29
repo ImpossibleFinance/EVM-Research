@@ -1,17 +1,22 @@
 from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
+from merge import *
+
 
 from Transactions import *
 from Active_addresses import *
-from GMT_hour import *
-from Avg_transactions import *
 from Blocks import *
+from Avg_transactions import *
+from GMT_hour import *
 
-fig_txs, txs_histogram = transactions()
-fig_addresses = active_addresses()
-fig_gmt_distribution, data_gmt = gmt_hour()
+data = merge_data()
+
+fig_txs, txs_histogram = transactions(data)
+fig_addresses = active_addresses(data)
+block_time, blocks_count = blocks(data)
 avg_tx_by_chain = transactions_by_chain_by_time()
-block_time, blocks_count = blocks()
+fig_gmt_distribution, data_gmt = gmt_hour()
+
 
 fig_gmt_distribution.update_layout(clickmode = 'event+select')
 
@@ -21,7 +26,14 @@ app.title = 'EVM Dashboard'
 app.layout = html.Div(children=[
     html.Div(
         children = [
-            html.H1(children='EVM Blockchains Analysis', className="header-title"),
+            html.Div([
+                html.Img(src = "assets/fivicon.ico"),
+                html.H1(
+                    children='EVM Blockchains Analysis', 
+                ),
+            ],
+            className = "header-title"
+            ),
             html.H2([
                 html.Span(children = "Built by"),
                 html.Span(children = " Impossible Research ", className="header-description-if"),

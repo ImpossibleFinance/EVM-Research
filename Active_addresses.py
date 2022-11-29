@@ -3,14 +3,11 @@ import plotly.graph_objs as go
 from Data_API import *
 
 
-def active_addresses():
-    f = open('api_config.json')
-    api_config = json.load(f)
+def active_addresses(data):
 
-    f2 = open('chains_config.json')
-    chains_config = json.load(f2)
+    f = open('chains_config.json')
+    chains_config = json.load(f)
 
-    data = data_by_url(((list(filter(lambda x:x["api_name"]=="Addresses",api_config)))[0]["chains_api"]))
     chains = data["Chain"].unique()
 
     fig = go.Figure()
@@ -35,6 +32,5 @@ def active_addresses():
     )
 
     f.close()
-    f2.close()
 
     return fig

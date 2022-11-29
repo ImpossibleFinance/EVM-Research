@@ -5,13 +5,13 @@ from Data_API import *
 
 
 def gmt_hour():
-    f = open('api_config.json')
+    f = open('requests_config.json')
     api_config = json.load(f)
 
     f2 = open('chains_config.json')
     chains_config = json.load(f2)
 
-    data = data_by_url(((list(filter(lambda x:x["api_name"]=="GMT Hour",api_config)))[0]["chains_api"]))
+    data = data_by_url(((list(filter(lambda x:x["api_name"] == "GMT Hour",api_config)))[0]["chains_api"]))
     chains = data["Chain"].unique()
 
     fig = go.Figure()

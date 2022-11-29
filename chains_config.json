@@ -1,37 +1,37 @@
 [
     {
       "chain_name": "Ethereum",
-      "chains_api": "etherscan.io",
+      "chains_api": "98beaf62-44b1-4739-b5fa-a60c238da329/data/latest",
       "colors": "#0ABABD"
     },
     {
         "chain_name": "BSC Chain",
-        "chains_api": "bscscan.com",
+        "chains_api": "d95600b4-91e1-4291-a9eb-faf08c02d327/data/latest",
         "colors": "#D5E11A"
     },
     {
         "chain_name": "Avalanche",
-        "chains_api": "snowtrace.io",
+        "chains_api": "ed95eccb-0500-4fce-8f7e-14365f1ba4b7/data/latest",
         "colors": "#F3190B"
     },
     {
         "chain_name": "Polygon",
-        "chains_api": "polygonscan.com",
-        "colors": "#000CFF"
+        "chains_api": "a5f9082b-8b73-44e3-9ace-4e0a33467af5/data/latest",
+        "colors": "#0B12F3"
     },
     {
         "chain_name": "Arbitrum",
-        "chains_api": "arbiscan.io",
+        "chains_api": "6dd7a507-6c04-4e82-97f5-e33bc5da0340/data/latest",
         "colors": "#5A81FC"
     },
     {
         "chain_name": "Optimism",
-        "chains_api": "optimistic.etherscan.io",
+        "chains_api": "39963592-9486-4d9e-a2e7-bdbcd9b99bf9/data/latest",
         "colors": "#FE7171"
     },
     {
         "chain_name": "Gnosis Chain",
-        "chains_api": "gnosisscan.io",
+        "chains_api": "22bff2e3-575f-4542-8b58-b0d3fc13a2df/data/latest",
         "colors": "#A09D9D"
     }
 ]
