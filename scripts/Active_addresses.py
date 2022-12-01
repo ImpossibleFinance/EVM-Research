@@ -1,6 +1,6 @@
 import json
 import plotly.graph_objs as go
-from Data_API import *
+from scripts.Data_API import *
 
 
 def active_addresses(data):

@@ -1,22 +1,24 @@
-from dash import Dash, html, dcc
+from dash import Dash, html, dcc, dash_table
 from dash.dependencies import Input, Output
 from merge import *
 
 
-from Transactions import *
-from Active_addresses import *
-from Blocks import *
-from Avg_transactions import *
-from GMT_hour import *
+from scripts.Transactions import *
+from scripts.Active_addresses import *
+from scripts.Blocks import *
+from scripts.Avg_transactions import *
+from scripts.GMT_hour import *
+from scripts.Main_table import *
 
 data = merge_data()
 
+table_data, last_date = table_data(data)
 fig_txs, txs_histogram = transactions(data)
 fig_addresses = active_addresses(data)
 block_time, blocks_count = blocks(data)
 avg_tx_by_chain = transactions_by_chain_by_time()
 fig_gmt_distribution, data_gmt = gmt_hour()
-
+last_date = (str(last_date).split(" "))[0]
 
 fig_gmt_distribution.update_layout(clickmode = 'event+select')
 
@@ -27,26 +29,121 @@ app.layout = html.Div(children=[
     html.Div(
         children = [
             html.Div([
-                html.Img(src = "assets/fivicon.ico"),
+                html.Img(src = "assets/favicon.ico", alt = " ", className = "if-ico"),
                 html.H1(
-                    children='EVM Blockchains Analysis', 
+                    ' EVM Blockchains Analysis', 
                 ),
             ],
             className = "header-title"
             ),
             html.H2([
-                html.Span(children = "Built by"),
-                html.Span(children = " Impossible Research ", className="header-description-if"),
-                html.Span(children = "team")
+                html.Span("Built by"),
+                html.Span(" Impossible Research ", className="header-description-if"),
+                html.Span("team")
                 ],
                 className = "header-description"
                 
             ),
             html.H2(
-                children = "Analyze ....The live Impossible Finance price today is $0,070130 USD with a 24-hour trading volume of $260,85 USD. We update our IF to USD price in real-time. Impossible Finance is down 2,11% in the last 24 hours. The current CoinMarketCap ranking is #1635, with a live market cap of $420 828 USD. It has a circulating supply of 6 000 661 IF coins and a max. supply of 21 000 000 IF coins.",
+                "Analyze.... The live Impossible Finance price today is $0,070130 USD with a 24-hour trading volume of $260,85 USD. We update our IF to USD price in real-time. Impossible Finance is down 2,11% in the last 24 hours. The current CoinMarketCap ranking is #1635, with a live market cap of $420 828 USD. It has a circulating supply of 6 000 661 IF coins and a max. supply of 21 000 000 IF coins.",
                 className="description-main"
             ),
         ],
+    ),
+    html.Div( children = [
+    html.H2('Interactive Data table', className = "table-name"),
+    html.Div(children = [
+        html.P(id = 'table_out_p1'),
+        html.P(id = 'table_out_p2'),
+        html.P(id = 'table_out_p3'),
+    ], className = "table-output"
+    ),
+
+    dash_table.DataTable(
+        id = 'table',
+        columns=[{"name": i, "id": i} 
+                 for i in table_data.columns],
+        data = table_data.to_dict('records'),
+        style_cell = dict(textAlign = 'left'),
+        style_header = dict(backgroundColor = "paleturquoise"),
+        style_data = dict(backgroundColor = "lavender"),
+        style_data_conditional = [
+        {
+            'if': {
+                'filter_query': '{Pct txs} > 0',
+                'column_id': '# of Transactions'
+            },
+            'color': 'green',
+            'fontWeight': 'bold'
+        },
+        {
+            'if': {
+                'filter_query': '{Pct txs} < 0',
+                'column_id': '# of Transactions'
+            },
+            'color': 'red',
+            'fontWeight': 'bold'
+        },
+
+        {
+            'if': {
+                'filter_query': '{Pct addresses} > 0',
+                'column_id': '# of Active addresses'
+            },
+            'color': 'green',
+            'fontWeight': 'bold'
+        },
+        {
+            'if': {
+                'filter_query': '{Pct addresses} < 0',
+                'column_id': '# of Active addresses'
+            },
+            'color': 'red',
+            'fontWeight': 'bold'
+        },
+
+        {
+            'if': {
+                'filter_query': '{Pct time} > 0',
+                'column_id': 'Block time [s]'
+            },
+            'color': 'green',
+            'fontWeight': 'bold'
+        },
+        {
+            'if': {
+                'filter_query': '{Pct time} < 0',
+                'column_id': 'Block time [s]'
+            },
+            'color': 'red',
+            'fontWeight': 'bold'
+        },
+
+        {
+            'if': {
+                'filter_query': '{Pct blocks} > 0',
+                'column_id': '# of Blocks'
+            },
+            'color': 'green',
+            'fontWeight': 'bold'
+        },
+        {
+            'if': {
+                'filter_query': '{Pct blocks} < 0',
+                'column_id': '# of Blocks'
+            },
+            'color': 'red',
+            'fontWeight': 'bold'
+        },
+        ],
+        style_cell_conditional = [
+            {
+            'if': {'column_id': c},
+            'display': 'none'
+            } for c in ['Pct txs', 'Pct addresses', 'Pct time', 'Pct blocks', 'Value', 'Active addresses', 'Block time', 'Blocks count']
+        ],
+    ), 
+    ], className = "table"
     ),
 
     dcc.Graph(
@@ -95,6 +192,47 @@ app.layout = html.Div(children=[
     ),
 ])
 
+
+@app.callback(
+    Output('table_out_p1', 'children'), 
+    Input('table', 'active_cell'))
+def update_graphs(active_cell):
+    if active_cell and active_cell['column_id'] != 'Chain':
+        return_data = str(table_data.iloc[active_cell['row']]['Chain']) + " " + str(active_cell['column_id']) + ":"
+        return return_data
+    return " "
+
+@app.callback(
+    Output('table_out_p2', 'children'), 
+    Input('table', 'active_cell'))
+def update_graphs(active_cell):
+    if active_cell and active_cell['column_id'] != 'Chain':
+        cell_data = table_data.iloc[active_cell['row']][active_cell['column_id']]
+        return_data = "On " + str(last_date) + " : " + str(cell_data)
+        return return_data
+    return "Click the table"
+
+@app.callback(
+    Output('table_out_p3', 'children'), 
+    Input('table', 'active_cell'))
+def update_graphs(active_cell):
+    if active_cell and active_cell['column_id'] != 'Chain':
+        return_data = " Average value for last 1M:"
+
+        if str(active_cell['column_id']) == '# of Transactions':
+            return_data = return_data + " " + str(round(table_data.iloc[active_cell['row']]['Value'], 0))
+        if str(active_cell['column_id']) == '# of Active addresses':
+            return_data = return_data + " " + str(round(table_data.iloc[active_cell['row']]['Active addresses'], 0))
+        if str(active_cell['column_id']) == 'Block time [s]':
+            return_data = return_data + " " + str(round(table_data.iloc[active_cell['row']]['Block time'], 0))
+        if str(active_cell['column_id']) == '# of Blocks':
+            return_data = return_data + " " + str(round(table_data.iloc[active_cell['row']]['Blocks count'], 0))
+        return return_data
+    return "Percentage in brackets is the difference between current value & average value for last 1 month"
+
+
+
+
 @app.callback(
     Output('transactions-gmt-distribution-specific-chain', 'figure'),
     Input('transactions-gmt-distribution', 'hoverData')
@@ -115,7 +253,7 @@ def specific_chain_gmt(hoverData):
         fig = go.Figure()
 
         fig.add_trace(go.Bar(
-            x = data_chain['Sum of transactions'],
+            x = data_chain['Avg # of transactions'],
             y = data_chain['GMT hour'],
             orientation = 'h',
             marker_color = ((list(filter(lambda x:x["chain_name"]==chain,chains_config)))[0]["colors"])
@@ -149,4 +287,4 @@ def specific_chain_gmt(hoverData):
         return fig
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug = True)

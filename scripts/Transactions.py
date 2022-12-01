@@ -2,11 +2,11 @@ import json
 import plotly.graph_objs as go
 import plotly.express as px
 from plotly.subplots import make_subplots
-from Data_API import *
+from scripts.Data_API import *
 
 def txs_distribution(data):
 
-    A = (data.groupby(by = [data["Date(UTC)"].dt.day_name(), data["Chain"]])['Value'].sum()).to_frame()
+    A = (data.groupby(by = [data["Date(UTC)"].dt.day_name(), data["Chain"]])['Value'].mean()).to_frame()
     A['Day of Week'] = A.index.get_level_values(0)
     A['Chain'] = A.index.get_level_values(1)
 
@@ -15,6 +15,8 @@ def txs_distribution(data):
     A['Day_id'] = A['Day of Week']
     A['Day_id'] = A['Day_id'].map(sorterIndex)
     A.sort_values('Day_id', inplace=True)
+
+    A['Value'] = round(A['Value'], 2)
 
     A = A.reset_index(drop=True)
     return A
@@ -37,10 +39,6 @@ def transactions(data):
 
     res_distribution['Color'] = [(list(filter(lambda x:x["chain_name"]==y, chains_config)))[0]['colors'] for y in res_distribution['Chain']]
 
-    result = res_distribution.merge(data_sum, on='Chain', how='inner', suffixes=('_1', '_2'))
-    result['Percentage'] = round(result['Value_1']/result['Value_2']*100, 2)
-
-    result = result.drop(columns=['Day_id', 'Color_2'])
     res_distribution = res_distribution.drop(columns=['Day_id'])
 
     # Plots
@@ -93,11 +91,11 @@ def transactions(data):
     fig.update_layout(xaxis=dict(rangeselector = dict(font = dict( color = "black"))))
 
     fig2 = px.scatter(
-        result,
+        res_distribution,
         x = 'Day of Week',
         y = 'Chain',
-        size = 'Percentage',
-        color = 'Percentage',
+        size = 'Value',
+        color = 'Value',
         height = 700,
         color_continuous_scale = px.colors.sequential.Oryel,
         title = "Distribution by day of week"
@@ -113,16 +111,31 @@ def transactions(data):
     )
 
     for chain in chains:
-        row = result[result["Chain"] == chain]['Percentage'].idxmax()
+        row = res_distribution[res_distribution["Chain"] == chain]['Value'].idxmax()
         fig2.add_trace(go.Scatter(
-            x = [result.loc[[row]]['Day of Week']], 
+            x = [res_distribution.loc[[row]]['Day of Week']], 
             y = [chain], 
             mode = 'markers',
-            marker_symbol = 'x',
+            marker_symbol = 'diamond-x',
             marker_size = 20,
+            marker_line=dict(width=2, color = '#FFFFFF'),
             showlegend = False,
-            marker_color = '#9CA1FF',
-            name = '<-- Maximum'
+            marker_color = '#4848F4',
+            name = '<-- Maximum of the week'
+            ))
+
+    for chain in chains:
+        row = res_distribution[res_distribution["Chain"] == chain]['Value'].idxmin()
+        fig2.add_trace(go.Scatter(
+            x = [res_distribution.loc[[row]]['Day of Week']], 
+            y = [chain], 
+            mode = 'markers',
+            marker_symbol = 'hexagram',
+            marker_size = 20,
+            marker_line=dict(width=2, color = '#FFFFFF'),
+            showlegend = False,
+            marker_color = '#F700FF',
+            name = 'Minimum of the week -->'
             ))
 
     f.close()

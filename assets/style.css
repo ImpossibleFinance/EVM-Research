@@ -19,6 +19,11 @@ body {
     font-family: "Verdana", sans-serif;
 }
 
+.if-ico {
+    width: 25px;
+    margin-right: 7px;
+}
+
 .header-description-if {
     color:violet;
 }
@@ -40,4 +45,26 @@ body {
     color:white;
     margin: 4px auto;
     max-width: 1200px;
+}
+
+.table-output {
+    text-align: center;
+    color:white;
+    font-weight: bold;
+    font-family: "Verdana", sans-serif;
+}
+
+.table {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 95%;
+}
+
+.table-name {
+    color:white;
+    margin: 4px auto;
+    text-align: left;
+    font-weight: bold;
+    font-family: "Verdana", sans-serif;
 }

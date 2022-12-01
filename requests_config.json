@@ -1,22 +1,22 @@
 [
     {
       "api_name": "Transactions",
-      "chains_api": "cca5a519-94cf-42f5-9d98-a089f53cac60/data/latest"
+      "flipside_api": "4c6a9c41-314a-4bd6-9cd5-82ccd30facbb/data/latest"
     },
     {
       "api_name": "Addresses",
-      "chains_api": "fc9c9375-b27f-4504-8be2-b237a5eb51e2/data/latest"
+      "flipside_api": "ce77710f-2495-49a7-a59b-52f4fb91c1ff/data/latest"
     },
     {
       "api_name": "GMT Hour",
-      "chains_api": "3b8f45f6-eee0-44e9-bcac-57ee33b31fbb/data/latest"
+      "flipside_api": "3b8f45f6-eee0-44e9-bcac-57ee33b31fbb/data/latest"
     },
     {
       "api_name": "Distribution by time and chain",
-      "chains_api": "3f1e2b4e-4809-40b6-bdb4-305b79bdc683/data/latest"
+      "flipside_api": "3f1e2b4e-4809-40b6-bdb4-305b79bdc683/data/latest"
     },
     {
       "api_name": "Blocks",
-      "chains_api": "00f71a34-dfc9-495b-91e0-55b5f4a7665a/data/latest"
+      "flipside_api": "98beaf62-44b1-4739-b5fa-a60c238da329/data/latest"
     }
 ]

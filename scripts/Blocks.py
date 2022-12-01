@@ -3,7 +3,7 @@ import plotly.graph_objs as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 from plotly import tools
-from Data_API import *
+from scripts.Data_API import *
 
 
 def blocks(data):
