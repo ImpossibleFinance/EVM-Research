@@ -11,7 +11,10 @@ def gmt_hour():
     f2 = open('chains_config.json')
     chains_config = json.load(f2)
 
-    data = data_by_url(((list(filter(lambda x:x["api_name"] == "GMT Hour",api_config)))[0]["flipside_api"]))
+    data = data_by_url(
+        ((list(filter(lambda x:x["api_name"] == "GMT Hour",api_config)))[0]["zettablock_api"]),
+        ((list(filter(lambda x:x["api_name"] == "GMT Hour",api_config)))[0]["api_name"])
+    )
     chains = data["Chain"].unique()
 
     fig = go.Figure()
@@ -19,8 +22,8 @@ def gmt_hour():
     for chain in chains:
         data_chain = data[data["Chain"] == chain]
         fig.add_trace(go.Bar(
-            x = data_chain["GMT hour"], 
-            y = data_chain["Avg # of transactions"],
+            x = data_chain["GMT_HOUR"], 
+            y = data_chain["AVG_TXS_COUNT"],
             name = chain,
             marker_color = ((list(filter(lambda x:x["chain_name"]==chain,chains_config)))[0]["colors"])
             ))

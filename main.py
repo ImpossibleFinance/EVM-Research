@@ -45,7 +45,7 @@ app.layout = html.Div(children=[
                 
             ),
             html.H2(
-                "Analyze.... The live Impossible Finance price today is $0,070130 USD with a 24-hour trading volume of $260,85 USD. We update our IF to USD price in real-time. Impossible Finance is down 2,11% in the last 24 hours. The current CoinMarketCap ranking is #1635, with a live market cap of $420 828 USD. It has a circulating supply of 6 000 661 IF coins and a max. supply of 21 000 000 IF coins.",
+                "Analyze....",
                 className="description-main"
             ),
         ],
@@ -253,8 +253,8 @@ def specific_chain_gmt(hoverData):
         fig = go.Figure()
 
         fig.add_trace(go.Bar(
-            x = data_chain['Avg # of transactions'],
-            y = data_chain['GMT hour'],
+            x = data_chain['AVG_TXS_COUNT'],
+            y = data_chain['GMT_HOUR'],
             orientation = 'h',
             marker_color = ((list(filter(lambda x:x["chain_name"]==chain,chains_config)))[0]["colors"])
         ))

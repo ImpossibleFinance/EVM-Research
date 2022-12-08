@@ -35,7 +35,7 @@ def table_data(data):
         for v in range(len(table_data['Active addresses_1']))]
 
     table_data_result['Block time [s]'] = [
-        str(table_data['Block time_1'][v]) + 
+        str(round(table_data['Block time_1'][v], 1)) + 
         " (" +
         str(round(table_data['Pct time'][v], 2)) + 
         "%)"

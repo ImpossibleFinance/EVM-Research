@@ -7,10 +7,13 @@ def transactions_by_chain_by_time():
     f = open('requests_config.json')
     api_config = json.load(f)
 
-    data = data_by_url(((list(filter(lambda x:x["api_name"] == "Distribution by time and chain",api_config)))[0]["flipside_api"]))
+    data = data_by_url(
+        ((list(filter(lambda x:x["api_name"] == "Distribution by time and chain",api_config)))[0]["zettablock_api"]),
+        ((list(filter(lambda x:x["api_name"] == "Distribution by time and chain",api_config)))[0]["api_name"])
+    )
 
     fig = go.Figure()
-    _columns = ['1M Value', '3M Value', '6M Value', '1Y Value']
+    _columns = ['Value_1M', 'Value_3M', 'Value_6M', 'Value_1Y']
     _color = ['#FF0000', '#F7FF00', '#08FF00', '#00AAFF']
 
     for x in range (len(_columns)):
@@ -18,9 +21,9 @@ def transactions_by_chain_by_time():
             x = data[_columns[x]],
             y = data['Chain'],
             orientation='h',
-            name = 'Last ' + _columns[x][:3],
+            name = 'Last ' + _columns[x][5:],
             marker_color = _color[x],
-            text = ['Last ' + _columns[x][:3] + ' : ' + "%.2f" %(v/1e6) + 'M' for v in data[_columns[x]]],
+            text = ['Last ' + _columns[x][5:] + ' : ' + "%.2f" %(v/1e6) + 'M' for v in data[_columns[x]]],
             textposition = 'inside'
         ))
 
