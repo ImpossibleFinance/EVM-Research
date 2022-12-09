@@ -22,7 +22,7 @@ def active_addresses(data):
             ))
 
     fig.update_layout(
-        title = "EVM Active addresses over time", 
+        title = "EVM Active addresses over time<br><sup>Daily number of active addresses - i.e. unique senders of transactions</sup>", 
         xaxis_title = "Date", 
         yaxis_title = "Addresses",
         height = 500,

@@ -19,7 +19,19 @@ def txs_distribution(data):
     A['Value'] = round(A['Value'], 2)
 
     A = A.reset_index(drop=True)
-    return A
+
+
+    B = (data.groupby(by = data["Chain"])['Value'].mean()).to_frame()
+    B['Chain'] = B.index.get_level_values(0)
+    B = B.reset_index(drop=True)
+    
+    result = A.merge(B, on='Chain', how='inner', suffixes=('_1', '_2'))
+
+    result['Percentage'] = round(result['Value_1']/result['Value_2']*100, 2)
+
+    result = result.rename(columns = {"Value_1": "Value"})
+
+    return result
 
 def transactions(data):
 
@@ -69,7 +81,7 @@ def transactions(data):
         marker_line = dict(color='#000000', width=2)
         ), row = 1, col = 2)
     fig.update_layout(
-        title = "EVM Transactions over time", 
+        title = "EVM Transactions over time<br><sup>Transactions count each day and pie chart - the total number of transactions for all time</sup>", 
         xaxis_title = "Date", 
         yaxis_title = "Transactions",
         height = 500,
@@ -94,11 +106,11 @@ def transactions(data):
         res_distribution,
         x = 'Day of Week',
         y = 'Chain',
-        size = 'Value',
-        color = 'Value',
+        size = 'Percentage',
+        color = 'Percentage',
         height = 700,
         color_continuous_scale = px.colors.sequential.Oryel,
-        title = "Distribution by day of week"
+        title = "Distribution by day of week<br><sup>The blue square is the most active day of the week, and the pink star is the most passive</sup><br><sup>Percentage = Average # of transactions for each day divided by Average # of transactions for each chain</sup>"
     )
     fig2.update_layout(
         xaxis_tickangle = 30,

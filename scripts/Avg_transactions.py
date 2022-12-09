@@ -7,9 +7,11 @@ def transactions_by_chain_by_time():
     f = open('requests_config.json')
     api_config = json.load(f)
 
+    name = "Distribution by time and chain"
+
     data = data_by_url(
-        ((list(filter(lambda x:x["api_name"] == "Distribution by time and chain",api_config)))[0]["zettablock_api"]),
-        ((list(filter(lambda x:x["api_name"] == "Distribution by time and chain",api_config)))[0]["api_name"])
+        ((list(filter(lambda x:x["api_name"] == name ,api_config)))[0]["zettablock_api"]),
+        ((list(filter(lambda x:x["api_name"] == name ,api_config)))[0]["api_name"])
     )
 
     fig = go.Figure()
@@ -21,14 +23,14 @@ def transactions_by_chain_by_time():
             x = data[_columns[x]],
             y = data['Chain'],
             orientation='h',
-            name = 'Last ' + _columns[x][5:],
+            name = 'Last ' + _columns[x][-2:],
             marker_color = _color[x],
-            text = ['Last ' + _columns[x][5:] + ' : ' + "%.2f" %(v/1e6) + 'M' for v in data[_columns[x]]],
+            text = ['Last ' + _columns[x][-2:] + ' : ' + "%.2f" %(v/1e6) + 'M' for v in data[_columns[x]]],
             textposition = 'inside'
         ))
 
     fig.update_layout(
-        title = "Average daily transactions", 
+        title = "Average daily transactions<br><sup>Comparison of the average number of transactions in different periods</sup>", 
         xaxis_title = "Average daily txs", 
         yaxis_title = "Chain",
         height = 700,

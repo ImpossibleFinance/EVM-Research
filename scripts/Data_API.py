@@ -64,6 +64,17 @@ def query(url):
             }
         """
 
+    if url == "NFT mints":
+        return """
+            {
+                records {
+                    date,
+                    chain,
+                    mints
+                }
+            }
+        """
+
 
 def data_by_url(internal_url, api_name):
 

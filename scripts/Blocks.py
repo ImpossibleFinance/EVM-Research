@@ -52,7 +52,7 @@ def blocks(data):
     ), row = 1, col = 1)
 
     fig.update_layout(
-        title = "Average block time", 
+        title = "Average block time<br><sup>Average time between blocks, calculated as the number of blocks divided by the number of seconds in a day (86400)</sup>", 
         yaxis_title = "Time [s]",
         height = 500,
         plot_bgcolor = '#171730',

@@ -28,6 +28,12 @@ body {
     color:violet;
 }
 
+.description-if-and-zb {
+    color: transparent;
+    background-clip: text;
+    background-image: linear-gradient(21deg, #69b7eb, #b3dbd3, #f4d6db);
+}
+
 .header-title {
     display: flex;
     align-items: center;

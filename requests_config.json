@@ -23,5 +23,10 @@
       "api_name": "Blocks",
       "flipside_api": "98beaf62-44b1-4739-b5fa-a60c238da329/data/latest",
       "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_cbd6216870c94b91a16d723cb810f43c/graphql"
+    },
+    {
+      "api_name": "NFT mints",
+      "flipside_api": "-",
+      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_54751845373b463689fcd9ef242769e4/graphql"
     }
 ]

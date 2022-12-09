@@ -9,6 +9,7 @@ from scripts.Blocks import *
 from scripts.Avg_transactions import *
 from scripts.GMT_hour import *
 from scripts.Main_table import *
+from scripts.NFT_mints import *
 
 data = merge_data()
 
@@ -16,8 +17,12 @@ table_data, last_date = table_data(data)
 fig_txs, txs_histogram = transactions(data)
 fig_addresses = active_addresses(data)
 block_time, blocks_count = blocks(data)
+
+
 avg_tx_by_chain = transactions_by_chain_by_time()
 fig_gmt_distribution, data_gmt = gmt_hour()
+nft_mint = nft_mints()
+
 last_date = (str(last_date).split(" "))[0]
 
 fig_gmt_distribution.update_layout(clickmode = 'event+select')
@@ -29,9 +34,9 @@ app.layout = html.Div(children=[
     html.Div(
         children = [
             html.Div([
-                html.Img(src = "assets/favicon.ico", alt = " ", className = "if-ico"),
+                html.Img(src = "assets/IF.png", alt = " ", className = "if-ico"),
                 html.H1(
-                    ' EVM Blockchains Analysis', 
+                    ' EVM Blockchains Analysis v0.2', 
                 ),
             ],
             className = "header-title"
@@ -44,8 +49,12 @@ app.layout = html.Div(children=[
                 className = "header-description"
                 
             ),
-            html.H2(
-                "Analyze....",
+            html.H2([
+                html.Span("The analysis is a comparison of activity on EVM blockchains, including metrics such as daily transactions, active addresses, as well as average block creation time and daily block count."),
+                html.Span(" Impossible Finance ", className="description-if-and-zb"),
+                html.Span("team has collected the most interesting metrics for you using"),
+                html.Span(" ZettaBlock API ", className="description-if-and-zb"),
+                ],
                 className="description-main"
             ),
         ],
@@ -189,6 +198,10 @@ app.layout = html.Div(children=[
     dcc.Graph(
         id='blocks-count',
         figure=blocks_count
+    ),
+    dcc.Graph(
+        id='nft-mint-count',
+        figure=nft_mint
     ),
 ])
 

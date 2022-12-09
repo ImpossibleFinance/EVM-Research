@@ -11,9 +11,11 @@ def gmt_hour():
     f2 = open('chains_config.json')
     chains_config = json.load(f2)
 
+    name = "GMT Hour"
+
     data = data_by_url(
-        ((list(filter(lambda x:x["api_name"] == "GMT Hour",api_config)))[0]["zettablock_api"]),
-        ((list(filter(lambda x:x["api_name"] == "GMT Hour",api_config)))[0]["api_name"])
+        ((list(filter(lambda x:x["api_name"] == name ,api_config)))[0]["zettablock_api"]),
+        ((list(filter(lambda x:x["api_name"] == name ,api_config)))[0]["api_name"])
     )
     chains = data["Chain"].unique()
 
@@ -29,7 +31,7 @@ def gmt_hour():
             ))
 
     fig.update_layout(
-        title = "Distribution of EVM Transactions by GMT hour", 
+        title = "Distribution of EVM Transactions by GMT hour<br><sup>Distribution of the average number of transactions each GMT hour, to get a separate graph hover your mouse over the desired chain</sup>", 
         xaxis_title = "GMT Hour", 
         yaxis_title = "Average # of Transactions",
         height = 500,
