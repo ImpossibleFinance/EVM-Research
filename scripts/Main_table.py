@@ -12,7 +12,7 @@ def table_data(data):
 
     table_data['Pct txs'] = 100*(table_data['Value_1'] - table_data['Value_2'])/table_data['Value_2']
     table_data['Pct addresses'] = 100*(table_data['Active addresses_1'] - table_data['Active addresses_2'])/table_data['Active addresses_2']
-    table_data['Pct time'] = 100*(table_data['Block time_1'] - table_data['Block time_2'])/table_data['Block time_1']
+    table_data['Pct time'] = -100*(table_data['Block time_1'] - table_data['Block time_2'])/table_data['Block time_1']
     table_data['Pct blocks'] = 100*(table_data['Blocks count_1'] - table_data['Blocks count_2'])/table_data['Blocks count_1']
 
 

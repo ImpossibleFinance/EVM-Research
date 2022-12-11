@@ -1,6 +1,5 @@
 import json
 import plotly.graph_objs as go
-from plotly.subplots import make_subplots
 from scripts.Data_API import *
 
 

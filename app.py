@@ -10,6 +10,7 @@ from scripts.Avg_transactions import *
 from scripts.GMT_hour import *
 from scripts.Main_table import *
 from scripts.NFT_mints import *
+from scripts.Bridges_activity import *
 
 data = merge_data()
 
@@ -22,11 +23,12 @@ block_time, blocks_count = blocks(data)
 avg_tx_by_chain = transactions_by_chain_by_time()
 fig_gmt_distribution, data_gmt = gmt_hour()
 nft_mint = nft_mints()
+bridges_chart, bridges_data, bridges_names = bridges_activity()
 
 last_date = (str(last_date).split(" "))[0]
 
 fig_gmt_distribution.update_layout(clickmode = 'event+select')
-
+bridges_chart.update_layout(clickmode = 'event+select')
 
 app = Dash(__name__)
 app.title = 'EVM Dashboard'
@@ -203,9 +205,28 @@ app.layout = html.Div(children=[
         id='nft-mint-count',
         figure=nft_mint
     ),
+
+
+    html.Div(children = dcc.Graph(
+        id = 'bridges-activity-sankey-diagram',
+        figure = bridges_chart,
+        ),
+    ),
+
+    html.Div(children = dcc.Graph(
+        id = 'bridges-transfers-daily'
+        ),
+        style={'width': '50%', 'display': 'inline-block'},
+    ),
+    html.Div(children = dcc.Graph(
+        id = 'bridges-usd-value-daily'
+        ),
+        style={'width': '50%', 'display': 'inline-block'},
+    ),
 ])
 
 
+# callback for table
 @app.callback(
     Output('table_out_p1', 'children'), 
     Input('table', 'active_cell'))
@@ -245,6 +266,9 @@ def update_graphs(active_cell):
 
 
 
+
+
+# callback for gmt distribution
 
 @app.callback(
     Output('transactions-gmt-distribution-specific-chain', 'figure'),
@@ -298,6 +322,93 @@ def specific_chain_gmt(hoverData):
         )
 
         return fig
+
+
+# callback for bridges
+
+@app.callback(
+    Output('bridges-transfers-daily', 'figure'),
+    Input('bridges-activity-sankey-diagram', 'clickData')
+)
+def specific_chain_gmt(clickData):
+    if clickData:
+        _temp_data = bridges_data[bridges_data["name"] == bridges_names[int(clickData['points'][0]['pointNumber'])]]
+
+        fig = go.Figure()
+
+
+        fig.add_trace(go.Bar(
+            x = _temp_data['DATE'],
+            y = _temp_data['TRANSFERS'],
+        ))
+
+        fig.update_layout(
+            title = "ERC-20 transfers for " + bridges_names[int(clickData['points'][0]['pointNumber'])] + " :", 
+            xaxis_title = "Date", 
+            yaxis_title = "ERC-20 transfers",
+            height = 400,
+            plot_bgcolor = '#171730',
+            paper_bgcolor = '#171730',
+            font = dict(color = 'white')
+        )
+
+        return fig
+    else:
+        fig = go.Figure()
+
+        fig.update_layout(
+            xaxis_title = "ERC-20 transfers", 
+            yaxis_title = "Transfers",
+            height = 400,
+            plot_bgcolor = '#171730',
+            paper_bgcolor = '#171730',
+            font = dict(color = 'white')
+        )
+
+        return fig
+
+@app.callback(
+    Output('bridges-usd-value-daily', 'figure'),
+    Input('bridges-activity-sankey-diagram', 'clickData')
+)
+def specific_chain_gmt(clickData):
+    if clickData:
+        _temp_data = bridges_data[bridges_data["name"] == bridges_names[int(clickData['points'][0]['pointNumber'])]]
+
+        fig = go.Figure()
+
+        
+        fig.add_trace(go.Bar(
+            x = _temp_data['DATE'],
+            y = _temp_data['USD_VALUE'],
+        ))
+
+        fig.update_layout(
+            title = "Stablecoins transfers for " + bridges_names[int(clickData['points'][0]['pointNumber'])] + " in USD equivalent :", 
+            xaxis_title = "Date", 
+            yaxis_title = "USD Value",
+            height = 400,
+            plot_bgcolor = '#171730',
+            paper_bgcolor = '#171730',
+            font = dict(color = 'white')
+        )
+
+        return fig
+    else:
+        fig = go.Figure()
+
+        fig.update_layout(
+            xaxis_title = "Date", 
+            yaxis_title = "USD Value",
+            height = 400,
+            plot_bgcolor = '#171730',
+            paper_bgcolor = '#171730',
+            font = dict(color = 'white')
+        )
+
+        return fig
+
+
 
 if __name__ == '__main__':
     app.run_server(debug = True)

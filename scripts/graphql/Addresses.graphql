@@ -1,0 +1,7 @@
+{
+    records {
+        date,
+        chain,
+        ADDRESSES
+    }
+}

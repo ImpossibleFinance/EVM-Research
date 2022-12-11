@@ -28,5 +28,10 @@
       "api_name": "NFT mints",
       "flipside_api": "-",
       "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_54751845373b463689fcd9ef242769e4/graphql"
+    },
+    {
+      "api_name": "Bridges Activity",
+      "flipside_api": "-",
+      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_9c6aa6fb634d436398d799e39a016489/graphql"
     }
 ]

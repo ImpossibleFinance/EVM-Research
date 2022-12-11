@@ -1,0 +1,8 @@
+{
+    records {
+        date,
+        chain,
+        BLOCK_TIME,
+        BLOCKS_COUNT
+    }
+}

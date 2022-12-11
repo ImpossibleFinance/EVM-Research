@@ -11,7 +11,7 @@ def merge_data():
     api_config = json.load(f)
 
     for x in api_config:
-        if x['api_name'] not in ['GMT Hour', 'Distribution by time and chain', 'NFT mints']:
+        if x['api_name'] in ['Addresses', 'Blocks', 'Transactions']:
             if data.empty:
                 data = data_by_url(x['zettablock_api'], x['api_name'])
             else:

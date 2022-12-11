@@ -1,0 +1,8 @@
+{
+    records {
+        DATE,
+        name,
+        TRANSFERS,
+        USD_VALUE
+    }
+}

@@ -7,74 +7,10 @@ from dotenv import load_dotenv
 
 
 def query(url):
-    if url == "Transactions":
-        return """
-            {
-                records {
-                    date,
-                    chain,
-                    VALUE
-                }
-            }
-        """
 
-    if url == "Addresses":
-        return """
-            {
-                records {
-                    date,
-                    chain,
-                    ADDRESSES
-                }
-            }
-        """
-
-    if url == "Blocks":
-        return """
-            {
-                records {
-                    date,
-                    chain,
-                    BLOCK_TIME,
-                    BLOCKS_COUNT
-                }
-            }
-        """
-
-    if url == "GMT Hour":
-        return """
-            {
-                records {
-                    GMT_HOUR,
-                    Chain,
-                    AVG_TXS_COUNT
-                }
-            }
-        """
-    if url == "Distribution by time and chain":
-        return """
-            {
-                records {
-                    Chain,
-                    Value_1M,
-                    Value_3M,
-                    Value_6M,
-                    Value_1Y
-                }
-            }
-        """
-
-    if url == "NFT mints":
-        return """
-            {
-                records {
-                    date,
-                    chain,
-                    mints
-                }
-            }
-        """
-
+    path = 'scripts/graphql/' + str(url) + ".graphql"
+    with open(path) as f:
+        return (f.read())
 
 def data_by_url(internal_url, api_name):
 
