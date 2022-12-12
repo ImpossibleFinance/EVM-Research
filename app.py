@@ -11,8 +11,11 @@ from scripts.GMT_hour import *
 from scripts.Main_table import *
 from scripts.NFT_mints import *
 from scripts.Bridges_activity import *
+from scripts.Prices import *
+
 
 data = merge_data()
+price_data = evm_prices()
 
 table_data, last_date = table_data(data)
 fig_txs, txs_histogram = transactions(data)
@@ -32,13 +35,16 @@ bridges_chart.update_layout(clickmode = 'event+select')
 
 app = Dash(__name__)
 app.title = 'EVM Dashboard'
+
+server = app.server
+
 app.layout = html.Div(children=[
     html.Div(
         children = [
             html.Div([
                 html.Img(src = "assets/IF.png", alt = " ", className = "if-ico"),
                 html.H1(
-                    ' EVM Blockchains Analysis v0.2', 
+                    ' EVM Blockchains Analysis (Open Beta)', 
                 ),
             ],
             className = "header-title"
@@ -206,22 +212,47 @@ app.layout = html.Div(children=[
         figure=nft_mint
     ),
 
-
-    html.Div(children = dcc.Graph(
-        id = 'bridges-activity-sankey-diagram',
-        figure = bridges_chart,
+    html.Div(children = [
+        html.Div(children = dcc.Graph(
+            id = 'bridges-activity-sankey-diagram',
+            figure = bridges_chart,
+            ),
         ),
+
+        html.Div(children = dcc.Graph(
+            id = 'bridges-transfers-daily'
+            ),
+            style={'width': '50%', 'display': 'inline-block'},
+        ),
+        html.Div(children = dcc.Graph(
+            id = 'bridges-usd-value-daily'
+            ),
+            style={'width': '50%', 'display': 'inline-block'},
+        ),
+    ], className = "bridge-border"
     ),
 
-    html.Div(children = dcc.Graph(
-        id = 'bridges-transfers-daily'
-        ),
-        style={'width': '50%', 'display': 'inline-block'},
+    html.H2('EVM native tokens price', className = "price-description"),
+    html.P('Select token symbol here. The chart below shows Ethereum price and price of token you selected', className = "price-description"),
+    dcc.RadioItems(
+        (price_data[price_data["TOKEN"] != "Ethereum (ETH)"])["TOKEN"].unique(),
+        'Binance (BNB)',
+        id = 'evm-prices-item',
+        className = "price-input"
     ),
-    html.Div(children = dcc.Graph(
-        id = 'bridges-usd-value-daily'
-        ),
-        style={'width': '50%', 'display': 'inline-block'},
+    dcc.Graph(
+        id='evm-price-plot'
+    ),
+
+    html.H2([
+            html.Span("The original of this dashboard is made on"),
+            html.A(
+                " Dune Analytics", 
+                href='https://dune.com/KARTOD/blockchains-analysis', 
+                target="_blank"
+            )
+        ],
+        className="description-main"
     ),
 ])
 
@@ -254,13 +285,13 @@ def update_graphs(active_cell):
         return_data = " Average value for last 1M:"
 
         if str(active_cell['column_id']) == '# of Transactions':
-            return_data = return_data + " " + str(round(table_data.iloc[active_cell['row']]['Value'], 0))
+            return_data = return_data + " " + str("{:,.2f}".format(round(table_data.iloc[active_cell['row']]['Value'], 0)))
         if str(active_cell['column_id']) == '# of Active addresses':
-            return_data = return_data + " " + str(round(table_data.iloc[active_cell['row']]['Active addresses'], 0))
+            return_data = return_data + " " + str("{:,.2f}".format(round(table_data.iloc[active_cell['row']]['Active addresses'], 0)))
         if str(active_cell['column_id']) == 'Block time [s]':
-            return_data = return_data + " " + str(round(table_data.iloc[active_cell['row']]['Block time'], 0))
+            return_data = return_data + " " + str("{:,.2f}".format(round(table_data.iloc[active_cell['row']]['Block time'], 0)))
         if str(active_cell['column_id']) == '# of Blocks':
-            return_data = return_data + " " + str(round(table_data.iloc[active_cell['row']]['Blocks count'], 0))
+            return_data = return_data + " " + str("{:,.2f}".format(round(table_data.iloc[active_cell['row']]['Blocks count'], 0)))
         return return_data
     return "Percentage in brackets is the difference between current value & average value for last 1 month"
 
@@ -409,6 +440,15 @@ def specific_chain_gmt(clickData):
         return fig
 
 
+
+# callback for evm prices
+
+@app.callback(
+    Output('evm-price-plot', 'figure'),
+    Input('evm-prices-item', 'value')
+)
+def specific_chain_gmt(value):
+    return evm_prices_chart(price_data, value)
 
 if __name__ == '__main__':
     app.run_server(debug = True)

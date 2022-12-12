@@ -44,6 +44,3 @@ def transactions_by_chain_by_time():
     f.close()
 
     return fig
-
-
-transactions_by_chain_by_time()

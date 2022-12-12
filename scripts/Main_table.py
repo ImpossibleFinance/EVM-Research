@@ -21,28 +21,28 @@ def table_data(data):
     table_data_result = table_data_result.merge(data_last_month_avg, on='Chain', how='left')
 
     table_data_result['# of Transactions'] = [
-        str(table_data['Value_1'][v]) + 
+        str("{:,.2f}".format(table_data['Value_1'][v])) + 
         " (" +
         str(round(table_data['Pct txs'][v], 2)) + 
         "%)"
         for v in range(len(table_data['Value_1']))]
 
     table_data_result['# of Active addresses'] = [
-        str(table_data['Active addresses_1'][v]) + 
+        str("{:,.2f}".format(table_data['Active addresses_1'][v])) + 
         " (" +
         str(round(table_data['Pct addresses'][v], 2)) + 
         "%)"
         for v in range(len(table_data['Active addresses_1']))]
 
     table_data_result['Block time [s]'] = [
-        str(round(table_data['Block time_1'][v], 1)) + 
+        str("{:,.2f}".format(round(table_data['Block time_1'][v], 1))) + 
         " (" +
         str(round(table_data['Pct time'][v], 2)) + 
         "%)"
         for v in range(len(table_data['Block time_1']))]
 
     table_data_result['# of Blocks'] = [
-        str(table_data['Blocks count_1'][v]) + 
+        str("{:,.2f}".format(table_data['Blocks count_1'][v])) + 
         " (" +
         str(round(table_data['Pct blocks'][v], 2)) + 
         "%)"
