@@ -3,7 +3,7 @@ import requests
 import json
 
 import os
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
 
 def query(url):
@@ -14,8 +14,11 @@ def query(url):
 
 def data_by_url(internal_url, api_name):
 
-    load_dotenv()
-    API_KEY = os.getenv('API_KEY_ZETTA_BLOCK')
+    #load_dotenv()
+    #API_KEY = os.getenv('API_KEY_ZETTA_BLOCK')
+
+    API_KEY = os.environ['API_KEY_ZETTA_BLOCK']
+
     _query = query(api_name)
 
     headers = {'X-API-KEY': API_KEY}
