@@ -451,4 +451,4 @@ def specific_chain_gmt(value):
     return evm_prices_chart(price_data, value)
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port='8080')
+    app.run_server(debug=False, host='0.0.0.0', port='8080')
