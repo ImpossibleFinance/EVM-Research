@@ -1,7 +1,7 @@
 from dash import Dash, html, dcc, dash_table
 from dash.dependencies import Input, Output
 from merge import *
-
+import flask
 
 from scripts.Transactions import *
 from scripts.Active_addresses import *
@@ -33,10 +33,14 @@ last_date = (str(last_date).split(" "))[0]
 fig_gmt_distribution.update_layout(clickmode = 'event+select')
 bridges_chart.update_layout(clickmode = 'event+select')
 
-app = Dash(__name__)
+
+server = flask.Flask(__name__)
+
+app = Dash(__name__, server = server)
+
+
 app.title = 'EVM Dashboard'
 
-server = app.server
 
 app.layout = html.Div(children=[
     html.Div(
@@ -451,4 +455,4 @@ def specific_chain_gmt(value):
     return evm_prices_chart(price_data, value)
 
 if __name__ == '__main__':
-    app.run_server(debug=False, host='0.0.0.0', port='8080')
+    app.run_server(debug = True)
