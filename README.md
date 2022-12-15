@@ -18,11 +18,5 @@ The analysis is a comparison of activity on EVM blockchains, including metrics s
 
 Start the UI:
 ```basg
-app.py
-```
-
-or
-
-```basg
-python3 app.py
+gunicorn app:server -b:8080
 ```
