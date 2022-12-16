@@ -29,8 +29,8 @@ body {
 }
 
 .description-if-and-zb {
-    color: transparent;
-    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     background-image: linear-gradient(21deg, #69b7eb, #b3dbd3, #f4d6db);
 }
 
@@ -40,10 +40,11 @@ body {
     text-align: center;
     justify-content: center;
     font-weight: bold;
-    color: transparent;
-    background-clip: text;
-    background-image: linear-gradient(30deg, #9b07f0, aqua);
     font-family: "Verdana", sans-serif;
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(30deg, #9b07f0, aqua);
 }
 
 .description-main {

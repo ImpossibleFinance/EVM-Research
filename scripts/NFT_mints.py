@@ -3,21 +3,28 @@ import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 from scripts.Data_API import *
 
-
-def nft_mints():
+def nfts_data_load():
 
     name = "NFT mints"
 
+
     f = open('requests_config.json')
     api_config = json.load(f)
-
-    f2 = open('chains_config.json')
-    chains_config = json.load(f2)
 
     data = data_by_url(
         ((list(filter(lambda x:x["api_name"] == name ,api_config)))[0]["zettablock_api"]),
         ((list(filter(lambda x:x["api_name"] == name ,api_config)))[0]["api_name"])
     )
+
+    f.close()
+
+    return data
+
+
+def nft_mints(data):
+
+    f2 = open('chains_config.json')
+    chains_config = json.load(f2)
 
     chains = data["CHAIN"].unique()
 
@@ -77,7 +84,6 @@ def nft_mints():
     fig.update_layout(xaxis=dict(rangeselector = dict(font = dict( color = "black"))))
 
 
-    f.close()
     f2.close()
 
     return fig

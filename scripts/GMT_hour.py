@@ -3,12 +3,10 @@ import plotly.graph_objs as go
 from scripts.Data_API import *
 
 
-def gmt_hour():
+def gmt_data():
+
     f = open('requests_config.json')
     api_config = json.load(f)
-
-    f2 = open('chains_config.json')
-    chains_config = json.load(f2)
 
     name = "GMT Hour"
 
@@ -16,6 +14,16 @@ def gmt_hour():
         ((list(filter(lambda x:x["api_name"] == name ,api_config)))[0]["zettablock_api"]),
         ((list(filter(lambda x:x["api_name"] == name ,api_config)))[0]["api_name"])
     )
+
+    f.close()
+
+    return data
+
+def gmt_hour(data):
+
+    f2 = open('chains_config.json')
+    chains_config = json.load(f2)
+
     chains = data["Chain"].unique()
 
     fig = go.Figure()
@@ -40,7 +48,6 @@ def gmt_hour():
         showlegend = False
     )
 
-    f.close()
     f2.close()
 
     return fig, data

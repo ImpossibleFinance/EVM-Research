@@ -31,9 +31,6 @@ def data_by_url(internal_url, api_name):
 
     if 'date' in df:
         df = df.rename(columns = {"date": "DATE"})
-    if 'DATE' in df:
-        df['DATE'] = pd.to_datetime(pd.to_datetime(df['DATE']).dt.strftime('%Y-%m-%d'))
-
 
 
     print(1) # calculate requests count

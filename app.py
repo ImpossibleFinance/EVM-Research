@@ -13,21 +13,43 @@ from scripts.NFT_mints import *
 from scripts.Bridges_activity import *
 from scripts.Prices import *
 
+def read_data(name):
+    df = pd.read_csv('csv_data/' + str(name) + '.csv')
 
-data = merge_data()
-price_data = evm_prices()
+    if 'DATE' in df:
+        df['DATE'] = pd.to_datetime(pd.to_datetime(df['DATE']).dt.strftime('%Y-%m-%d'))
+    
+    if 'Date(UTC)' in df:
+        df['Date(UTC)'] = pd.to_datetime(pd.to_datetime(df['Date(UTC)']).dt.strftime('%Y-%m-%d'))
+    
+    return df
+
+
+data = read_data("data")
+price_data = read_data("price_data")
+data_avg_txs = read_data("data_avg_txs")
+gmt_hour_data = read_data("gmt_hour_data")
+nfts_data = read_data("nfts_data")
+data_bridges = read_data("data_bridges")
+
+
+#### Load data
 
 table_data, last_date = table_data(data)
 fig_txs, txs_histogram = transactions(data)
 fig_addresses = active_addresses(data)
 block_time, blocks_count = blocks(data)
 
+avg_tx_by_chain = transactions_by_chain_by_time(data_avg_txs)
 
-avg_tx_by_chain = transactions_by_chain_by_time()
-fig_gmt_distribution, data_gmt = gmt_hour()
-nft_mint = nft_mints()
-bridges_chart, bridges_data, bridges_names = bridges_activity()
+fig_gmt_distribution, data_gmt = gmt_hour(gmt_hour_data)
 
+nft_mint = nft_mints(nfts_data)
+
+bridges_chart, bridges_data, bridges_names = bridges_activity(data_bridges)
+
+
+####
 last_date = (str(last_date).split(" "))[0]
 
 fig_gmt_distribution.update_layout(clickmode = 'event+select')

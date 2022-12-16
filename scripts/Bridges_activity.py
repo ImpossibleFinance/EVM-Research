@@ -3,8 +3,7 @@ import plotly.graph_objs as go
 from scripts.Data_API import *
 import numpy as np
 
-
-def bridges_activity():
+def bridges_data_load():
     name = "Bridges Activity"
 
     f = open('requests_config.json')
@@ -15,15 +14,15 @@ def bridges_activity():
         ((list(filter(lambda x:x["api_name"] == name ,api_config)))[0]["api_name"])
     )
 
+    f.close()
+
+    return data
+
+def bridges_activity(data):
+
     data_avg_by_bridge = data.groupby('name').mean()
     data_avg_by_bridge['name'] = data_avg_by_bridge.index.get_level_values(0)
     data_avg_by_bridge = data_avg_by_bridge.reset_index(drop=True)
-
-    data = data.sort_values(by=['name'])
-    data_avg_by_bridge = data_avg_by_bridge.sort_values(by=['name'])
-
-    bridges = data["name"].unique()
-    bridges = np.append(['Ethereum'], bridges)
 
     fig = go.Figure()
 
@@ -31,12 +30,12 @@ def bridges_activity():
         valueformat = ".0f",
         valuesuffix = " Transfers",
         node = {
-            "label": bridges,
+            "label": ['Ethereum'] + [j for j in data_avg_by_bridge['name']],
             "pad": 10
         },
         link = dict(
-            source = [0 for i in range(len(bridges)-1)],
-            target = [i for i in range(1,len(bridges))],
+            source = [0 for i in range(len(data["name"].unique()))],
+            target = [i for i in range(1,len(data["name"].unique()))],
             value = [k for k in data_avg_by_bridge['TRANSFERS']],
             customdata = ["{:,.2f}".format(round(j, 1)) for j in data_avg_by_bridge['USD_VALUE']],
 

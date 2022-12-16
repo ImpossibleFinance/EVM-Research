@@ -2,8 +2,7 @@ import json
 import plotly.graph_objs as go
 from scripts.Data_API import *
 
-
-def transactions_by_chain_by_time():
+def avg_transactions_data():
     f = open('requests_config.json')
     api_config = json.load(f)
 
@@ -13,6 +12,12 @@ def transactions_by_chain_by_time():
         ((list(filter(lambda x:x["api_name"] == name ,api_config)))[0]["zettablock_api"]),
         ((list(filter(lambda x:x["api_name"] == name ,api_config)))[0]["api_name"])
     )
+
+    f.close()
+
+    return data
+
+def transactions_by_chain_by_time(data):
 
     fig = go.Figure()
     _columns = ['Value_1M', 'Value_3M', 'Value_6M', 'Value_1Y']
@@ -40,7 +45,5 @@ def transactions_by_chain_by_time():
         barmode='group'
         #template = 'plotly_dark'
     )
-
-    f.close()
 
     return fig
