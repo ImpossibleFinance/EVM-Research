@@ -1,14 +1,20 @@
 from datetime import timedelta
 import pandas as pd
 
-def table_data(data):
+def last_month_addresses(data):
     last_date = (max(data['Date(UTC)']))
 
-    data_last_month_avg = (data[data['Date(UTC)'].between((last_date - timedelta(days = 30)), last_date)]).groupby('Chain').mean()
-    data_last_month_avg['Chain'] = data_last_month_avg.index.get_level_values(0)
+    data_last_month_avg = (data[data['Date(UTC)'].between((last_date - timedelta(days = 30)), last_date)]).groupby('CHAIN').mean()
+    data_last_month_avg['CHAIN'] = data_last_month_avg.index.get_level_values(0)
     data_last_month_avg = data_last_month_avg.reset_index(drop=True)
 
-    table_data = data[data['Date(UTC)'] == last_date].merge(data_last_month_avg, on='Chain', how='inner', suffixes=('_1', '_2'))
+    return data_last_month_avg, last_date
+
+
+def table_data(data):
+    data_last_month_avg, last_date = last_month_addresses(data)
+
+    table_data = data[data['Date(UTC)'] == last_date].merge(data_last_month_avg, on='CHAIN', how='inner', suffixes=('_1', '_2'))
 
     table_data['Pct txs'] = 100*(table_data['Value_1'] - table_data['Value_2'])/table_data['Value_2']
     table_data['Pct addresses'] = 100*(table_data['Active addresses_1'] - table_data['Active addresses_2'])/table_data['Active addresses_2']
@@ -17,8 +23,8 @@ def table_data(data):
 
 
     table_data_result  = pd.DataFrame()
-    table_data_result['Chain'] = table_data['Chain']
-    table_data_result = table_data_result.merge(data_last_month_avg, on='Chain', how='left')
+    table_data_result['CHAIN'] = table_data['CHAIN']
+    table_data_result = table_data_result.merge(data_last_month_avg, on='CHAIN', how='left')
 
     table_data_result['# of Transactions'] = [
         str("{:,.2f}".format(table_data['Value_1'][v])) + 

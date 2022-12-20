@@ -28,9 +28,15 @@ def data_by_url(internal_url, api_name):
 
     if 'chain' in df:
         df = df.rename(columns = {"chain": "CHAIN"})
+    
+    if 'Chain' in df:
+        df = df.rename(columns = {"Chain": "CHAIN"})
 
     if 'date' in df:
-        df = df.rename(columns = {"date": "DATE"})
+        df = df.rename(columns = {"date": "Date(UTC)"})
+
+    if 'DATE' in df:
+        df = df.rename(columns = {"DATE": "Date(UTC)"})
 
 
     print(1) # calculate requests count

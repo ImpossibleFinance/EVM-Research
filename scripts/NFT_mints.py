@@ -29,7 +29,7 @@ def nft_mints(data):
     chains = data["CHAIN"].unique()
 
     data_sum = data.groupby('CHAIN').sum()
-    data_sum['Chain'] = data_sum.index.get_level_values(0)
+    data_sum['CHAIN'] = data_sum.index.get_level_values(0)
     data_sum['Color'] = [(list(filter(lambda x:x["chain_name"] == (y.split(" "))[0] ,chains_config)))[0]['colors'] for y in data_sum.index]
 
     data_sum = data_sum.reset_index(drop=True)
@@ -44,7 +44,7 @@ def nft_mints(data):
     for chain in chains:
         data_chain = data[data["CHAIN"] == chain]
         fig.add_trace(go.Scatter(
-            x = data_chain["DATE"], 
+            x = data_chain["Date(UTC)"], 
             y = data_chain["mints"],
             name = chain,
             marker_color = ((list(filter(lambda x:x["chain_name"] == (chain.split(" "))[0],chains_config)))[0]["colors"])
@@ -52,7 +52,7 @@ def nft_mints(data):
             row = 1, col = 1)
 
     fig.add_trace(go.Pie(
-        labels = data_sum['Chain'], 
+        labels = data_sum['CHAIN'], 
         values = data_sum['mints'], 
         name = "Total Unique NFTs count", 
         marker_colors = data_sum['Color'], 

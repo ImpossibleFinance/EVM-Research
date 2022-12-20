@@ -24,12 +24,12 @@ def gmt_hour(data):
     f2 = open('chains_config.json')
     chains_config = json.load(f2)
 
-    chains = data["Chain"].unique()
+    chains = data["CHAIN"].unique()
 
     fig = go.Figure()
 
     for chain in chains:
-        data_chain = data[data["Chain"] == chain]
+        data_chain = data[data["CHAIN"] == chain]
         fig.add_trace(go.Bar(
             x = data_chain["GMT_HOUR"], 
             y = data_chain["AVG_TXS_COUNT"],

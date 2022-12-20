@@ -5,6 +5,27 @@ body {
     background-color: #171730;
 }
 
+.chains-input-main {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 95%;
+    border: thick double #32a1ce;
+}
+
+.dropdown-table-input {
+    margin-bottom: 30px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.main-chains-selection {
+    margin-left: 5px;
+    color: darkblue;
+    font-weight: bold;
+    font-family: "Verdana", sans-serif;
+}
+
 .aligned {
     display: inline-flex;
     align-items: center;
@@ -22,6 +43,18 @@ body {
 .if-ico {
     width: 25px;
     margin-right: 7px;
+}
+
+.evm-ico {
+    width: 30px;
+    margin-right: 7px;
+    margin-left: 7px;
+}
+
+.nonevm-ico {
+    width: 35px;
+    margin-right: 7px;
+    margin-left: 7px;
 }
 
 .header-description-if {
@@ -66,7 +99,6 @@ body {
     margin-left: auto;
     margin-right: auto;
     width: 95%;
-    border: thick double #32a1ce;
 }
 
 .table-name {

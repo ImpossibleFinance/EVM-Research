@@ -1,0 +1,10 @@
+{
+    records {
+        date,
+        TOKEN,
+        CHAIN,
+        ADDRESSES,
+        VALUE,
+        PRICE
+    }
+}

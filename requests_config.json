@@ -38,5 +38,10 @@
       "api_name": "EVM Prices",
       "flipside_api": "-",
       "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_e8ba96aff17f48a69f86131ff09eba68/graphql"
+    },
+    {
+      "api_name": "Solana Metrics",
+      "flipside_api": "-",
+      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_412f8874ab404c7c890f8a6aba4a8861/graphql"
     }
 ]

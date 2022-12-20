@@ -7,7 +7,7 @@
     {
         "chain_name": "BSC Chain",
         "token": "Binance (BNB)",
-        "colors": "#D5E11A"
+        "colors": "#FFD800"
     },
     {
         "chain_name": "Avalanche",
@@ -38,5 +38,10 @@
         "chain_name": "Fantom",
         "token": "Fantom (FTM)",
         "colors": "#2B9BDF"
+    },
+    {
+        "chain_name": "Solana",
+        "token": "Solana (SOL)",
+        "colors": "#00FFFF"
     }
 ]

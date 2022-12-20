@@ -1,4 +1,4 @@
-from dash import Dash, html, dcc, dash_table
+from dash import Dash, html, dcc, dash_table, callback_context
 from dash.dependencies import Input, Output
 from merge import *
 import flask
@@ -12,6 +12,9 @@ from scripts.Main_table import *
 from scripts.NFT_mints import *
 from scripts.Bridges_activity import *
 from scripts.Prices import *
+
+from scripts.Solana import *
+
 
 def read_data(name):
     df = pd.read_csv('csv_data/' + str(name) + '.csv')
@@ -31,7 +34,7 @@ data_avg_txs = read_data("data_avg_txs")
 gmt_hour_data = read_data("gmt_hour_data")
 nfts_data = read_data("nfts_data")
 data_bridges = read_data("data_bridges")
-
+solana_data = read_data("solana_data")
 
 #### Load data
 
@@ -47,6 +50,10 @@ fig_gmt_distribution, data_gmt = gmt_hour(gmt_hour_data)
 nft_mint = nft_mints(nfts_data)
 
 bridges_chart, bridges_data, bridges_names = bridges_activity(data_bridges)
+
+## Part II
+
+non_evm_txs, non_evm_users, non_evm_price = solana(solana_data, data, price_data)
 
 
 ####
@@ -89,10 +96,55 @@ app.layout = html.Div(children=[
                 html.Span("team has collected the most interesting metrics for you using"),
                 html.Span(" ZettaBlock API ", className="description-if-and-zb"),
                 ],
-                className="description-main"
+                className = "description-main"
             ),
         ],
     ),
+
+    html.Div( children = [
+    html.H1('Before you begin, please select the chains you wish to review:', className = "price-description"),
+    html.P('This choice will affect all of the charts in the 1st part except the Interactive table and Distribution by GMT Hour chart', className = "price-description"),
+
+    dcc.Dropdown(
+        [
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/ethereum.png", height = 15),
+                        html.Span("Ethereum", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "Ethereum",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/polygon.png", height = 15),
+                        html.Span("Polygon", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "Polygon",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/arbitrum.png", height = 15),
+                        html.Span("Arbitrum", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "Arbitrum",
+            },
+        ], 
+        value = ['Ethereum', 'Polygon'],
+        multi = True,
+        id = 'chain-selections',
+        className = "dropdown-table-input"
+    ),
+    ], className = "chains-input-main"
+    ),
+
     html.Div( children = [
     html.H2('Interactive Data table', className = "table-name"),
     html.Div(children = [
@@ -104,7 +156,7 @@ app.layout = html.Div(children=[
 
     dash_table.DataTable(
         id = 'table',
-        columns=[{"name": i, "id": i} 
+        columns = [{"name": i, "id": i} 
                  for i in table_data.columns],
         data = table_data.to_dict('records'),
         style_cell = dict(textAlign = 'left'),
@@ -191,7 +243,7 @@ app.layout = html.Div(children=[
 
     dcc.Graph(
         id='transactions-over-time',
-        figure=fig_txs
+        figure = fig_txs
     ),
 
     html.Div(children = dcc.Graph(
@@ -270,6 +322,38 @@ app.layout = html.Div(children=[
         id='evm-price-plot'
     ),
 
+    # Part II
+
+    html.Div([
+        html.Img(src = "assets/ethereum.png", alt = " ", className = "evm-ico"),
+        html.H1(
+            ' EVM VS Non-EVM Blockchains ', 
+        ),
+        html.Img(src = "assets/solana.png", alt = " ", className = "nonevm-ico"),
+    ],
+    className = "header-title"
+    ),
+
+    html.Div(children = dcc.Graph(
+        id = 'evm-vs-non-evm-txs',
+        figure = non_evm_txs,
+        ),
+        style={'width': '50%', 'display': 'inline-block'},
+    ),
+    html.Div(children = dcc.Graph(
+        id = 'evm-vs-non-evm-users',
+        figure = non_evm_users,
+        ),
+        style={'width': '50%', 'display': 'inline-block'},
+    ),
+
+    dcc.Graph(
+        id = 'non-evm-price',
+        figure = non_evm_price
+    ),
+
+    # The END
+
     html.H2([
             html.Span("The original of this dashboard is made on"),
             html.A(
@@ -278,9 +362,52 @@ app.layout = html.Div(children=[
                 target="_blank"
             )
         ],
-        className="description-main"
+        className = "description-main"
     ),
 ])
+
+#callback for main checklist
+@app.callback(
+    Output('transactions-over-time', 'figure'),
+    Output('txs-histogram', 'figure'),
+    Output('addresses-over-time', 'figure'),
+    Output('block-time', 'figure'),
+    Output('blocks-count', 'figure'),
+    Output('txs-avg-txs-distribution', 'figure'),
+    Output('nft-mint-count', 'figure'),
+    Input('chain-selections', 'value')
+)
+def update_output(value):
+    if value:
+        fig_txs, txs_histogram = transactions(data.loc[data['CHAIN'].isin(value)])
+
+        fig_addresses = active_addresses(data.loc[data['CHAIN'].isin(value)])
+
+        block_time, blocks_count = blocks(data.loc[data['CHAIN'].isin(value)])
+
+        avg_tx_by_chain = transactions_by_chain_by_time(data_avg_txs.loc[data_avg_txs['CHAIN'].isin(value)])
+
+        nfts_value = []
+
+        for x in value:
+            nfts_value.append(x + " ERC-721")
+            nfts_value.append(x + " ERC-1155")
+
+        nft_mint = nft_mints(nfts_data.loc[nfts_data['CHAIN'].isin(nfts_value)])
+            
+        return fig_txs, txs_histogram, fig_addresses, block_time, blocks_count, avg_tx_by_chain, nft_mint
+
+    else:
+        fig = go.Figure()
+
+        fig.update_layout(
+            height = 400,
+            plot_bgcolor = '#171730',
+            paper_bgcolor = '#171730',
+            font = dict(color = 'white')
+        )
+
+        return fig, fig, fig, fig, fig, fig, fig
 
 
 # callback for table
@@ -288,8 +415,8 @@ app.layout = html.Div(children=[
     Output('table_out_p1', 'children'), 
     Input('table', 'active_cell'))
 def update_graphs(active_cell):
-    if active_cell and active_cell['column_id'] != 'Chain':
-        return_data = str(table_data.iloc[active_cell['row']]['Chain']) + " " + str(active_cell['column_id']) + ":"
+    if active_cell and active_cell['column_id'] != 'CHAIN':
+        return_data = str(table_data.iloc[active_cell['row']]['CHAIN']) + " " + str(active_cell['column_id']) + ":"
         return return_data
     return " "
 
@@ -297,7 +424,7 @@ def update_graphs(active_cell):
     Output('table_out_p2', 'children'), 
     Input('table', 'active_cell'))
 def update_graphs(active_cell):
-    if active_cell and active_cell['column_id'] != 'Chain':
+    if active_cell and active_cell['column_id'] != 'CHAIN':
         cell_data = table_data.iloc[active_cell['row']][active_cell['column_id']]
         return_data = "On " + str(last_date) + " : " + str(cell_data)
         return return_data
@@ -307,7 +434,7 @@ def update_graphs(active_cell):
     Output('table_out_p3', 'children'), 
     Input('table', 'active_cell'))
 def update_graphs(active_cell):
-    if active_cell and active_cell['column_id'] != 'Chain':
+    if active_cell and active_cell['column_id'] != 'CHAIN':
         return_data = " Average value for last 1M:"
 
         if str(active_cell['column_id']) == '# of Transactions':
@@ -333,13 +460,13 @@ def update_graphs(active_cell):
 )
 def specific_chain_gmt(hoverData):
     if hoverData:
-        _chain_list = ((data_gmt[data_gmt.index == hoverData['points'][0]['curveNumber']]['Chain']).to_string()).split(" ")
+        _chain_list = ((data_gmt[data_gmt.index == hoverData['points'][0]['curveNumber']]['CHAIN']).to_string()).split(" ")
         if _chain_list[len(_chain_list)-2] != '':
             chain = _chain_list[len(_chain_list)-2] + ' ' + _chain_list[len(_chain_list)-1]
         else:
             chain = _chain_list[len(_chain_list)-1]    
 
-        data_chain = data_gmt[data_gmt["Chain"] == chain]
+        data_chain = data_gmt[data_gmt["CHAIN"] == chain]
 
         f2 = open('chains_config.json')
         chains_config = json.load(f2)
@@ -362,6 +489,8 @@ def specific_chain_gmt(hoverData):
             paper_bgcolor = '#171730',
             font = dict(color = 'white')
         )
+
+        fig.update_xaxes(type = "log")
 
         f2.close()
 
@@ -387,7 +516,7 @@ def specific_chain_gmt(hoverData):
     Output('bridges-transfers-daily', 'figure'),
     Input('bridges-activity-sankey-diagram', 'clickData')
 )
-def specific_chain_gmt(clickData):
+def specific_bridge(clickData):
     if clickData:
         _temp_data = bridges_data[bridges_data["name"] == bridges_names[int(clickData['points'][0]['pointNumber'])]]
 
@@ -395,7 +524,7 @@ def specific_chain_gmt(clickData):
 
 
         fig.add_trace(go.Bar(
-            x = _temp_data['DATE'],
+            x = _temp_data['Date(UTC)'],
             y = _temp_data['TRANSFERS'],
         ))
 
@@ -424,11 +553,13 @@ def specific_chain_gmt(clickData):
 
         return fig
 
+
+
 @app.callback(
     Output('bridges-usd-value-daily', 'figure'),
     Input('bridges-activity-sankey-diagram', 'clickData')
 )
-def specific_chain_gmt(clickData):
+def specific_bridge_usd(clickData):
     if clickData:
         _temp_data = bridges_data[bridges_data["name"] == bridges_names[int(clickData['points'][0]['pointNumber'])]]
 
@@ -436,7 +567,7 @@ def specific_chain_gmt(clickData):
 
         
         fig.add_trace(go.Bar(
-            x = _temp_data['DATE'],
+            x = _temp_data['Date(UTC)'],
             y = _temp_data['USD_VALUE'],
         ))
 
@@ -473,7 +604,7 @@ def specific_chain_gmt(clickData):
     Output('evm-price-plot', 'figure'),
     Input('evm-prices-item', 'value')
 )
-def specific_chain_gmt(value):
+def price_evm(value):
     return evm_prices_chart(price_data, value)
 
 if __name__ == '__main__':

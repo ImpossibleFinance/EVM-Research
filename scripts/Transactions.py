@@ -6,9 +6,9 @@ from scripts.Data_API import *
 
 def txs_distribution(data):
 
-    A = (data.groupby(by = [data["Date(UTC)"].dt.day_name(), data["Chain"]])['Value'].mean()).to_frame()
+    A = (data.groupby(by = [data["Date(UTC)"].dt.day_name(), data["CHAIN"]])['Value'].mean()).to_frame()
     A['Day of Week'] = A.index.get_level_values(0)
-    A['Chain'] = A.index.get_level_values(1)
+    A['CHAIN'] = A.index.get_level_values(1)
 
     sorter = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     sorterIndex = dict(zip(sorter,range(len(sorter))))
@@ -21,11 +21,11 @@ def txs_distribution(data):
     A = A.reset_index(drop=True)
 
 
-    B = (data.groupby(by = data["Chain"])['Value'].mean()).to_frame()
-    B['Chain'] = B.index.get_level_values(0)
+    B = (data.groupby(by = data["CHAIN"])['Value'].mean()).to_frame()
+    B['CHAIN'] = B.index.get_level_values(0)
     B = B.reset_index(drop=True)
     
-    result = A.merge(B, on='Chain', how='inner', suffixes=('_1', '_2'))
+    result = A.merge(B, on='CHAIN', how='inner', suffixes=('_1', '_2'))
 
     result['Percentage'] = round(result['Value_1']/result['Value_2']*100, 2)
 
@@ -38,18 +38,18 @@ def transactions(data):
     f = open('chains_config.json')
     chains_config = json.load(f)
 
-    chains = data['Chain'].unique()
+    chains = data['CHAIN'].unique()
 
     res_distribution = (txs_distribution(data))
 
-    data_sum = data.groupby('Chain').sum()
-    data_sum['Chain'] = data_sum.index.get_level_values(0)
+    data_sum = data.groupby('CHAIN').sum()
+    data_sum['CHAIN'] = data_sum.index.get_level_values(0)
     data_sum['Color'] = [(list(filter(lambda x:x["chain_name"]==y,chains_config)))[0]['colors'] for y in data_sum.index]
 
     data_sum = data_sum.reset_index(drop=True)
 
 
-    res_distribution['Color'] = [(list(filter(lambda x:x["chain_name"]==y, chains_config)))[0]['colors'] for y in res_distribution['Chain']]
+    res_distribution['Color'] = [(list(filter(lambda x:x["chain_name"]==y, chains_config)))[0]['colors'] for y in res_distribution['CHAIN']]
 
     res_distribution = res_distribution.drop(columns=['Day_id'])
 
@@ -63,17 +63,18 @@ def transactions(data):
     )
 
     for chain in chains:
-        data_chain = data[data["Chain"] == chain]
+        data_chain = data[data["CHAIN"] == chain]
         fig.add_trace(go.Scatter(
             x = data_chain["Date(UTC)"], 
             y = data_chain["Value"],
             name = chain,
+            showlegend = False,
             marker_color = ((list(filter(lambda x:x["chain_name"]==chain,chains_config)))[0]["colors"])
             ), 
             row = 1, col = 1)
 
     fig.add_trace(go.Pie(
-        labels = data_sum['Chain'], 
+        labels = data_sum['CHAIN'], 
         values = data_sum['Value'], 
         name = "Total transactions count", 
         marker_colors = data_sum['Color'], 
@@ -105,7 +106,7 @@ def transactions(data):
     fig2 = px.scatter(
         res_distribution,
         x = 'Day of Week',
-        y = 'Chain',
+        y = 'CHAIN',
         size = 'Percentage',
         color = 'Percentage',
         height = 700,
@@ -119,11 +120,12 @@ def transactions(data):
         yaxis_tickfont = dict(size = 9),
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
-        font = dict(color = 'white')
+        font = dict(color = 'white'),
+        yaxis_title = "Chain"
     )
 
     for chain in chains:
-        row = res_distribution[res_distribution["Chain"] == chain]['Value'].idxmax()
+        row = res_distribution[res_distribution["CHAIN"] == chain]['Value'].idxmax()
         fig2.add_trace(go.Scatter(
             x = [res_distribution.loc[[row]]['Day of Week']], 
             y = [chain], 
@@ -137,7 +139,7 @@ def transactions(data):
             ))
 
     for chain in chains:
-        row = res_distribution[res_distribution["Chain"] == chain]['Value'].idxmin()
+        row = res_distribution[res_distribution["CHAIN"] == chain]['Value'].idxmin()
         fig2.add_trace(go.Scatter(
             x = [res_distribution.loc[[row]]['Day of Week']], 
             y = [chain], 

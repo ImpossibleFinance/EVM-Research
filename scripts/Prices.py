@@ -25,8 +25,6 @@ def evm_prices():
 
 def evm_prices_chart(data, token):
     
-    fig = make_subplots(specs = [[{"secondary_y": True}]])
-
     ethereum_price = data[data["TOKEN"] == "Ethereum (ETH)"]
     second_token_price = data[data["TOKEN"] == token]
 
@@ -39,9 +37,11 @@ def evm_prices_chart(data, token):
         if item['token'] == "Ethereum (ETH)":
             eth_color = item['colors']
 
+    fig = make_subplots(specs = [[{"secondary_y": True}]])
+
     fig.add_trace(
         go.Scatter(
-            x = ethereum_price['DATE'],
+            x = ethereum_price['Date(UTC)'],
             y = ethereum_price['PRICE'],
             name = "Ethereum (ETH) price",
             marker_color = eth_color
@@ -51,7 +51,7 @@ def evm_prices_chart(data, token):
 
     fig.add_trace(
         go.Scatter(
-            x = second_token_price['DATE'],
+            x = second_token_price['Date(UTC)'],
             y = second_token_price['PRICE'],
             name = token + " price",
             marker_color = token_color

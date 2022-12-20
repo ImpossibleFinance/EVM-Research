@@ -26,7 +26,7 @@ def transactions_by_chain_by_time(data):
     for x in range (len(_columns)):
         fig.add_trace(go.Bar(
             x = data[_columns[x]],
-            y = data['Chain'],
+            y = data['CHAIN'],
             orientation='h',
             name = 'Last ' + _columns[x][-2:],
             marker_color = _color[x],
