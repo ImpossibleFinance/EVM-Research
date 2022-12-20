@@ -51,6 +51,19 @@ def active_addresses(data):
         font = dict(color = 'white')
     )
 
+    fig.update_xaxes(
+        rangeselector=dict(
+            buttons=list([
+                dict(count=1, label="1m", step="month", stepmode="backward"),
+                dict(count=3, label="3m", step="month", stepmode="backward"),
+                dict(count=1, label="1y", step="year", stepmode="backward"),
+                dict(count=5, label="5y", step="year", stepmode="backward"),
+                dict(step="all")
+            ])
+        )
+    )
+    fig.update_layout(xaxis=dict(rangeselector = dict(font = dict( color = "black"))))
+
     f.close()
 
     return fig

@@ -1,6 +1,6 @@
 import pandas as pd
 import json
-
+import numpy as np
 
 from scripts.Data_API import *
 
@@ -20,4 +20,6 @@ def merge_data():
     data = data.reset_index(drop=True)
     data = data.rename(columns = {"VALUE": "Value", "ADDRESSES": "Active addresses", "BLOCK_TIME": "Block time", "BLOCKS_COUNT": "Blocks count"})
 
+
+    data = data.replace(np.nan, 0)
     return data

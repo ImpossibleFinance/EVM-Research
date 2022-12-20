@@ -1,7 +1,6 @@
 import json
 import plotly.graph_objs as go
 from scripts.Data_API import *
-import numpy as np
 
 def bridges_data_load():
     name = "Bridges Activity"
