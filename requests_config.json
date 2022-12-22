@@ -43,5 +43,15 @@
       "api_name": "Solana Metrics",
       "flipside_api": "-",
       "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_412f8874ab404c7c890f8a6aba4a8861/graphql"
+    },
+    {
+      "api_name": "Stablecoins by type",
+      "flipside_api": "-",
+      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_f9e116867ec0409fbcf67f544050512d/graphql"
+    },
+    {
+      "api_name": "Stablecoins by symbol",
+      "flipside_api": "-",
+      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_743460c4f37c4fa2b5947cd85c32eefb/graphql"
     }
 ]

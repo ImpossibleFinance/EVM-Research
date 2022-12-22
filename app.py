@@ -12,6 +12,7 @@ from scripts.Main_table import *
 from scripts.NFT_mints import *
 from scripts.Bridges_activity import *
 from scripts.Prices import *
+from scripts.Stablecoins import *
 
 from scripts.Solana import *
 
@@ -34,6 +35,10 @@ data_avg_txs = read_data("data_avg_txs")
 gmt_hour_data = read_data("gmt_hour_data")
 nfts_data = read_data("nfts_data")
 data_bridges = read_data("data_bridges")
+
+stable_symbol = read_data("stable_symbol")
+stable_type = read_data("stable_type")
+
 solana_data = read_data("solana_data")
 
 #### Load data
@@ -48,6 +53,8 @@ avg_tx_by_chain = transactions_by_chain_by_time(data_avg_txs)
 fig_gmt_distribution, data_gmt = gmt_hour(gmt_hour_data)
 
 nft_mint = nft_mints(nfts_data)
+
+stablecoins_by_type = stablecoins_charts(stable_type)
 
 bridges_chart, bridges_data, bridges_names = bridges_activity(data_bridges)
 
@@ -291,6 +298,170 @@ app.layout = html.Div(children=[
     ),
 
     html.Div(children = [
+        html.H2('Stablecoins in EVM chains', className = "price-description"),
+        html.Div(children = dcc.Graph(
+            id = 'stablecoins-by-type',
+            figure = stablecoins_by_type,
+            ),
+        ),
+        html.P('Select stablecoins here. So you can choose the stablecoins you want to compare in terms of supply.', className = "price-description"),
+
+        dcc.Dropdown(
+        [
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/usdc.png", height = 15),
+                        html.Span("USDC", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "USDC",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/usdt.png", height = 15),
+                        html.Span("USDT", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "USDT",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/busd.png", height = 15),
+                        html.Span("BUSD", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "BUSD",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/dai.png", height = 15),
+                        html.Span("DAI", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "DAI",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/tusd.png", height = 15),
+                        html.Span("TUSD", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "TUSD",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/pax.png", height = 15),
+                        html.Span("PAX", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "PAX",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/lusd.png", height = 15),
+                        html.Span("LUSD", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "LUSD",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/mim.png", height = 15),
+                        html.Span("MIM", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "MIM",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/fei.png", height = 15),
+                        html.Span("FEI", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "FEI",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/susd.png", height = 15),
+                        html.Span("sUSD", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "sUSD",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/ampl.png", height = 15),
+                        html.Span("AMPL", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "AMPL",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/ust.png", height = 15),
+                        html.Span("UST", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "UST",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/frax.png", height = 15),
+                        html.Span("FRAX", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "FRAX",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/alchemix.png", height = 15),
+                        html.Span("Alchemix", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "ALUSD",
+            },
+            
+        ], 
+        value = ['USDC', 'USDT', 'BUSD', 'DAI'],
+        multi = True,
+        id = 'stablecoins-selections',
+        className = "dropdown-table-input"
+    ),
+
+        html.Div(children = dcc.Graph(
+            id = 'stablecoins-by-symbol',
+            ),
+        ),
+    ], className = "bridge-border"
+    ),
+    html.Div(children = [
         html.Div(children = dcc.Graph(
             id = 'bridges-activity-sankey-diagram',
             figure = bridges_chart,
@@ -307,7 +478,7 @@ app.layout = html.Div(children=[
             ),
             style={'width': '50%', 'display': 'inline-block'},
         ),
-    ], className = "bridge-border"
+    ],
     ),
 
     html.H2('EVM native tokens price', className = "price-description"),
@@ -509,6 +680,29 @@ def specific_chain_gmt(hoverData):
 
         return fig
 
+
+#callback for stablecoins
+@app.callback(
+    Output('stablecoins-by-symbol', 'figure'),
+    Input('stablecoins-selections', 'value')
+)
+def update_stablecoins(value):
+    if value:
+        fig = stablecoins_callback(stable_symbol.loc[stable_symbol['symbol'].isin(value)])
+
+        return fig
+
+    else:
+        fig = go.Figure()
+
+        fig.update_layout(
+            height = 400,
+            plot_bgcolor = '#171730',
+            paper_bgcolor = '#171730',
+            font = dict(color = 'white')
+        )
+
+        return fig
 
 # callback for bridges
 

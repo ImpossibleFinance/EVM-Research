@@ -6,6 +6,9 @@ from scripts.Avg_transactions import *
 from scripts.GMT_hour import *
 from scripts.NFT_mints import *
 from scripts.Bridges_activity import *
+
+from scripts.Stablecoins import *
+
 from scripts.Solana import *
 
 data = merge_data()
@@ -14,6 +17,9 @@ data_avg_txs = avg_transactions_data()
 gmt_hour_data = gmt_data()
 nfts_data = nfts_data_load()
 data_bridges = bridges_data_load()
+
+stable_symbol, stable_type = stablecoins_data()
+
 solana_data = solana_upload()
 
 try:
@@ -54,6 +60,23 @@ try:
 except:
     data_bridges.to_csv('csv_data/data_bridges.csv', index = False)
     
+
+
+try:
+    if max(pd.read_csv('csv_data/stable_symbol.csv').index) <= max(stable_symbol.index):
+        stable_symbol.to_csv('csv_data/stable_symbol.csv', index = False)
+except:
+    stable_symbol.to_csv('csv_data/stable_symbol.csv', index = False)
+
+try:
+    if max(pd.read_csv('csv_data/stable_type.csv').index) <= max(stable_type.index):
+        stable_type.to_csv('csv_data/stable_type.csv', index = False)
+except:
+    stable_type.to_csv('csv_data/stable_type.csv', index = False)
+
+
+
+
 try:
     if max(pd.read_csv('csv_data/solana_data.csv').index) <= max(solana_data.index):
         solana_data.to_csv('csv_data/solana_data.csv', index = False)
