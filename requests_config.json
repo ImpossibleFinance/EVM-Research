@@ -1,13 +1,8 @@
 [
     {
-      "api_name": "Transactions",
-      "flipside_api": "4c6a9c41-314a-4bd6-9cd5-82ccd30facbb/data/latest",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_1188be59c8a142a0ad9d41cb8a58f509/graphql"
-    },
-    {
-      "api_name": "Addresses",
-      "flipside_api": "ce77710f-2495-49a7-a59b-52f4fb91c1ff/data/latest",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_d4361c49c10a47cb84b6d408ebcadef5/graphql"
+      "api_name": "Main info",
+      "flipside_api": "-",
+      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_77c1910642d54f328bc8c98a8297292f/graphql"
     },
     {
       "api_name": "GMT Hour",
@@ -18,11 +13,6 @@
       "api_name": "Distribution by time and chain",
       "flipside_api": "3f1e2b4e-4809-40b6-bdb4-305b79bdc683/data/latest",
       "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_88225be8f02449c7af4427e0a8ad0d09/graphql"
-    },
-    {
-      "api_name": "Blocks",
-      "flipside_api": "98beaf62-44b1-4739-b5fa-a60c238da329/data/latest",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_cbd6216870c94b91a16d723cb810f43c/graphql"
     },
     {
       "api_name": "NFT mints",
@@ -47,11 +37,11 @@
     {
       "api_name": "Stablecoins by type",
       "flipside_api": "-",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_f9e116867ec0409fbcf67f544050512d/graphql"
+      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_84fb83b2c77247d49e9db8feefba6711/graphql"
     },
     {
       "api_name": "Stablecoins by symbol",
       "flipside_api": "-",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_743460c4f37c4fa2b5947cd85c32eefb/graphql"
+      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_fe1b4609bee44710bbd9ac715de66f96/graphql"
     }
 ]

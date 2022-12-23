@@ -11,11 +11,8 @@ def merge_data():
     api_config = json.load(f)
 
     for x in api_config:
-        if x['api_name'] in ['Addresses', 'Blocks', 'Transactions']:
-            if data.empty:
-                data = data_by_url(x['zettablock_api'], x['api_name'])
-            else:
-                data = data.merge(data_by_url(x['zettablock_api'], x['api_name']), on = ['Date(UTC)', 'CHAIN'], how = 'outer')
+        if x['api_name'] == 'Main info':
+            data = data_by_url(x['zettablock_api'], x['api_name'])
     data = data.sort_values(by=['Date(UTC)'])
     data = data.reset_index(drop=True)
     data = data.rename(columns = {"VALUE": "Value", "ADDRESSES": "Active addresses", "BLOCK_TIME": "Block time", "BLOCKS_COUNT": "Blocks count"})

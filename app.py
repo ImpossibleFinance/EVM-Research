@@ -28,18 +28,10 @@ def read_data(name):
     
     return df
 
+data_name_array = ['data', 'price_data', 'data_avg_txs', 'gmt_hour_data', 'nfts_data', 'data_bridges', 'stable_symbol', 'stable_type', 'solana_data']
 
-data = read_data("data")
-price_data = read_data("price_data")
-data_avg_txs = read_data("data_avg_txs")
-gmt_hour_data = read_data("gmt_hour_data")
-nfts_data = read_data("nfts_data")
-data_bridges = read_data("data_bridges")
-
-stable_symbol = read_data("stable_symbol")
-stable_type = read_data("stable_type")
-
-solana_data = read_data("solana_data")
+for name in data_name_array:
+    (globals()[name]) = read_data(str(name))
 
 #### Load data
 
@@ -64,6 +56,7 @@ non_evm_txs, non_evm_users, non_evm_price = solana(solana_data, data, price_data
 
 
 ####
+
 last_date = (str(last_date).split(" "))[0]
 
 fig_gmt_distribution.update_layout(clickmode = 'event+select')
@@ -351,16 +344,6 @@ app.layout = html.Div(children=[
             {
                 "label": html.Span(
                     [
-                        html.Img(src = "assets/tusd.png", height = 15),
-                        html.Span("TUSD", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "TUSD",
-            },
-
-            {
-                "label": html.Span(
-                    [
                         html.Img(src = "assets/pax.png", height = 15),
                         html.Span("PAX", className = "main-chains-selection"),
                     ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
@@ -406,16 +389,6 @@ app.layout = html.Div(children=[
                     ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
                 ),
                 "value": "sUSD",
-            },
-
-            {
-                "label": html.Span(
-                    [
-                        html.Img(src = "assets/ampl.png", height = 15),
-                        html.Span("AMPL", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "AMPL",
             },
 
             {

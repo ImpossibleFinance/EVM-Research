@@ -1,7 +1,9 @@
 {
     records {
-        date,
-        chain,
+        DATE,
+        CHAIN,
+        VALUE,
+        ADDRESSES,
         BLOCK_TIME,
         BLOCKS_COUNT
     }
