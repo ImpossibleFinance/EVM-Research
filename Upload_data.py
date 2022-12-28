@@ -2,35 +2,41 @@ import pandas as pd
 
 from merge import *
 from scripts.Prices import *
-from scripts.Avg_transactions import *
 from scripts.GMT_hour import *
 from scripts.NFT_mints import *
-from scripts.Bridges_activity import *
 
 from scripts.Stablecoins import *
 
 from scripts.Solana import *
 
 data = merge_data()
-price_data = evm_prices()
-data_avg_txs = avg_transactions_data()
-gmt_hour_data = gmt_data()
+price_data = evm_prices_load()
+gmt_hour_data = gmt_data_load()
 nfts_data = nfts_data_load()
-data_bridges = bridges_data_load()
 
-stable_symbol, stable_type = stablecoins_data()
+stable_symbol, stable_type = stablecoins_data_load()
 
 solana_data = solana_upload()
 
-data_name_array = ['data', 'price_data', 'data_avg_txs', 'gmt_hour_data', 'nfts_data', 'data_bridges', 'stable_symbol', 'stable_type', 'solana_data']
+data_name_array = ['data', 'price_data', 'gmt_hour_data', 'nfts_data', 'stable_symbol', 'stable_type', 'solana_data']
+
 
 for name in data_name_array:
+    df = (globals()[name])
     try:
-        if max(pd.read_csv('csv_data/' + str(name) + '.csv').index) <= (max((globals()[name]).index)):
-            print("Rewriting old CSV " + name)
-            (globals()[name]).to_csv('csv_data/' + str(name) + '.csv', index = False)
+        if 'Date(UTC)' in df:
+            data_from_file = pd.read_csv('csv_data/' + str(name) + '.csv')
+
+            first_date = (min(data['Date(UTC)']))
+
+            result = pd.concat([data_from_file[data_from_file["Date(UTC)"] <= first_date], df[df["Date(UTC)"] >= first_date]], ignore_index=True)
+            result.to_csv('csv_data/' + str(name) + '.csv', index = False)
+
+            print("Rewriting CSV with new dates " + name)
+
         else:
-            print("Someting wrong with " + name)
+            df.to_csv('csv_data/' + str(name) + '.csv', index = False)
+            print("Rewriting whole CSV: " + name)
     except:
-        (globals()[name]).to_csv('csv_data/' + str(name) + '.csv', index = False)
+        df.to_csv('csv_data/' + str(name) + '.csv', index = False)
         print("Writing new CSV: " + name)

@@ -1,9 +1,0 @@
-{
-    records {
-        Chain,
-        Value_1M,
-        Value_3M,
-        Value_6M,
-        Value_1Y
-    }
-}

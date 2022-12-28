@@ -10,11 +10,6 @@
       "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_aa61cf7981d34e479d66fdf78c55f89b/graphql"
     },
     {
-      "api_name": "Distribution by time and chain",
-      "flipside_api": "3f1e2b4e-4809-40b6-bdb4-305b79bdc683/data/latest",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_88225be8f02449c7af4427e0a8ad0d09/graphql"
-    },
-    {
       "api_name": "NFT mints",
       "flipside_api": "-",
       "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_54751845373b463689fcd9ef242769e4/graphql"

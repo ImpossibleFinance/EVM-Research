@@ -6,11 +6,9 @@ import flask
 from scripts.Transactions import *
 from scripts.Active_addresses import *
 from scripts.Blocks import *
-from scripts.Avg_transactions import *
 from scripts.GMT_hour import *
 from scripts.Main_table import *
 from scripts.NFT_mints import *
-from scripts.Bridges_activity import *
 from scripts.Prices import *
 from scripts.Stablecoins import *
 
@@ -28,7 +26,7 @@ def read_data(name):
     
     return df
 
-data_name_array = ['data', 'price_data', 'data_avg_txs', 'gmt_hour_data', 'nfts_data', 'data_bridges', 'stable_symbol', 'stable_type', 'solana_data']
+data_name_array = ['data', 'price_data', 'gmt_hour_data', 'nfts_data', 'stable_symbol', 'stable_type', 'solana_data']
 
 for name in data_name_array:
     (globals()[name]) = read_data(str(name))
@@ -40,7 +38,7 @@ fig_txs, txs_histogram = transactions(data)
 fig_addresses = active_addresses(data)
 block_time, blocks_count = blocks(data)
 
-avg_tx_by_chain = transactions_by_chain_by_time(data_avg_txs)
+avg_tx_by_chain = transactions_by_chain_by_time(data)
 
 fig_gmt_distribution, data_gmt = gmt_hour(gmt_hour_data)
 
@@ -48,7 +46,6 @@ nft_mint = nft_mints(nfts_data)
 
 stablecoins_by_type = stablecoins_charts(stable_type)
 
-bridges_chart, bridges_data, bridges_names = bridges_activity(data_bridges)
 
 ## Part II
 
@@ -60,7 +57,6 @@ non_evm_txs, non_evm_users, non_evm_price = solana(solana_data, data, price_data
 last_date = (str(last_date).split(" "))[0]
 
 fig_gmt_distribution.update_layout(clickmode = 'event+select')
-bridges_chart.update_layout(clickmode = 'event+select')
 
 
 server = flask.Flask(__name__)
@@ -434,25 +430,6 @@ app.layout = html.Div(children=[
         ),
     ], className = "bridge-border"
     ),
-    html.Div(children = [
-        html.Div(children = dcc.Graph(
-            id = 'bridges-activity-sankey-diagram',
-            figure = bridges_chart,
-            ),
-        ),
-
-        html.Div(children = dcc.Graph(
-            id = 'bridges-transfers-daily'
-            ),
-            style={'width': '50%', 'display': 'inline-block'},
-        ),
-        html.Div(children = dcc.Graph(
-            id = 'bridges-usd-value-daily'
-            ),
-            style={'width': '50%', 'display': 'inline-block'},
-        ),
-    ],
-    ),
 
     html.H2('EVM native tokens price', className = "price-description"),
     html.P('Select token symbol here. The chart below shows Ethereum price and price of token you selected', className = "price-description"),
@@ -529,7 +506,7 @@ def update_output(value):
 
         block_time, blocks_count = blocks(data.loc[data['CHAIN'].isin(value)])
 
-        avg_tx_by_chain = transactions_by_chain_by_time(data_avg_txs.loc[data_avg_txs['CHAIN'].isin(value)])
+        avg_tx_by_chain = transactions_by_chain_by_time(data.loc[data['CHAIN'].isin(value)])
 
         nfts_value = []
 
@@ -582,13 +559,13 @@ def update_graphs(active_cell):
         return_data = " Average value for last 1M:"
 
         if str(active_cell['column_id']) == '# of Transactions':
-            return_data = return_data + " " + str("{:,.2f}".format(round(table_data.iloc[active_cell['row']]['Value'], 0)))
+            return_data = return_data + " " + str("{:,.1f}".format(round(table_data.iloc[active_cell['row']]['Value'], 0)))
         if str(active_cell['column_id']) == '# of Active addresses':
-            return_data = return_data + " " + str("{:,.2f}".format(round(table_data.iloc[active_cell['row']]['Active addresses'], 0)))
+            return_data = return_data + " " + str("{:,.1f}".format(round(table_data.iloc[active_cell['row']]['Active addresses'], 0)))
         if str(active_cell['column_id']) == 'Block time [s]':
-            return_data = return_data + " " + str("{:,.2f}".format(round(table_data.iloc[active_cell['row']]['Block time'], 0)))
+            return_data = return_data + " " + str("{:,.2f}".format(round(table_data.iloc[active_cell['row']]['Block time'], 2)))
         if str(active_cell['column_id']) == '# of Blocks':
-            return_data = return_data + " " + str("{:,.2f}".format(round(table_data.iloc[active_cell['row']]['Blocks count'], 0)))
+            return_data = return_data + " " + str("{:,.1f}".format(round(table_data.iloc[active_cell['row']]['Blocks count'], 0)))
         return return_data
     return "Percentage in brackets is the difference between current value & average value for last 1 month"
 
@@ -676,94 +653,6 @@ def update_stablecoins(value):
         )
 
         return fig
-
-# callback for bridges
-
-@app.callback(
-    Output('bridges-transfers-daily', 'figure'),
-    Input('bridges-activity-sankey-diagram', 'clickData')
-)
-def specific_bridge(clickData):
-    if clickData:
-        _temp_data = bridges_data[bridges_data["name"] == bridges_names[int(clickData['points'][0]['pointNumber'])]]
-
-        fig = go.Figure()
-
-
-        fig.add_trace(go.Bar(
-            x = _temp_data['Date(UTC)'],
-            y = _temp_data['TRANSFERS'],
-        ))
-
-        fig.update_layout(
-            title = "ERC-20 transfers for " + bridges_names[int(clickData['points'][0]['pointNumber'])] + " :", 
-            xaxis_title = "Date", 
-            yaxis_title = "ERC-20 transfers",
-            height = 400,
-            plot_bgcolor = '#171730',
-            paper_bgcolor = '#171730',
-            font = dict(color = 'white')
-        )
-
-        return fig
-    else:
-        fig = go.Figure()
-
-        fig.update_layout(
-            xaxis_title = "ERC-20 transfers", 
-            yaxis_title = "Transfers",
-            height = 400,
-            plot_bgcolor = '#171730',
-            paper_bgcolor = '#171730',
-            font = dict(color = 'white')
-        )
-
-        return fig
-
-
-
-@app.callback(
-    Output('bridges-usd-value-daily', 'figure'),
-    Input('bridges-activity-sankey-diagram', 'clickData')
-)
-def specific_bridge_usd(clickData):
-    if clickData:
-        _temp_data = bridges_data[bridges_data["name"] == bridges_names[int(clickData['points'][0]['pointNumber'])]]
-
-        fig = go.Figure()
-
-        
-        fig.add_trace(go.Bar(
-            x = _temp_data['Date(UTC)'],
-            y = _temp_data['USD_VALUE'],
-        ))
-
-        fig.update_layout(
-            title = "Stablecoins transfers for " + bridges_names[int(clickData['points'][0]['pointNumber'])] + " in USD equivalent :", 
-            xaxis_title = "Date", 
-            yaxis_title = "USD Value",
-            height = 400,
-            plot_bgcolor = '#171730',
-            paper_bgcolor = '#171730',
-            font = dict(color = 'white')
-        )
-
-        return fig
-    else:
-        fig = go.Figure()
-
-        fig.update_layout(
-            xaxis_title = "Date", 
-            yaxis_title = "USD Value",
-            height = 400,
-            plot_bgcolor = '#171730',
-            paper_bgcolor = '#171730',
-            font = dict(color = 'white')
-        )
-
-        return fig
-
-
 
 # callback for evm prices
 

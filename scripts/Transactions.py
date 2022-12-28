@@ -4,6 +4,8 @@ import plotly.express as px
 from plotly.subplots import make_subplots
 from scripts.Data_API import *
 
+from datetime import timedelta
+
 def txs_distribution(data):
 
     A = (data.groupby(by = [data["Date(UTC)"].dt.day_name(), data["CHAIN"]])['Value'].mean()).to_frame()
@@ -155,3 +157,42 @@ def transactions(data):
     f.close()
 
     return fig, fig2
+
+
+def transactions_by_chain_by_time(data):
+
+    last_date = (max(data['Date(UTC)']))
+    _columns = ['Value_1M', 'Value_3M', 'Value_6M', 'Value_1Y']
+    _days = [30, 90, 180, 365]
+    _color = ['#FF0000', '#F7FF00', '#08FF00', '#00AAFF']
+
+    fig = go.Figure()
+
+    for i in range (len(_columns)):
+        (globals()[_columns[i]]) = (data[data['Date(UTC)'].between((last_date - timedelta(days = _days[i])), last_date)]).groupby('CHAIN').mean()
+        (globals()[_columns[i]])['CHAIN'] = (globals()[_columns[i]]).index.get_level_values(0)
+        (globals()[_columns[i]]) = (globals()[_columns[i]]).reset_index(drop=True)
+
+        fig.add_trace(go.Bar(
+            x = (globals()[_columns[i]])['Value'],
+            y = (globals()[_columns[i]])['CHAIN'],
+            orientation='h',
+            name = 'Last ' + _columns[i][-2:],
+            marker_color = _color[i],
+            text = ['Last ' + _columns[i][-2:] + ' : ' + "%.2f" %(v/1e6) + 'M' for v in (globals()[_columns[i]])['Value']],
+            textposition = 'inside'
+        ))
+
+    fig.update_layout(
+        title = "Average daily transactions<br><sup>Comparison of the average number of transactions in different periods</sup>", 
+        xaxis_title = "Average daily txs", 
+        yaxis_title = "Chain",
+        height = 700,
+        plot_bgcolor = '#171730',
+        paper_bgcolor = '#171730',
+        font = dict(color = 'white'),
+        barmode='group'
+        #template = 'plotly_dark'
+    )
+
+    return fig

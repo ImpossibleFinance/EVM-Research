@@ -5,7 +5,7 @@ from plotly.subplots import make_subplots
 from scripts.Data_API import *
 
 
-def stablecoins_data():
+def stablecoins_data_load():
 
     name_symbol = "Stablecoins by symbol"
     name_type = "Stablecoins by type"

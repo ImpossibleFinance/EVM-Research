@@ -3,7 +3,7 @@ import plotly.graph_objs as go
 from scripts.Data_API import *
 
 
-def gmt_data():
+def gmt_data_load():
 
     f = open('requests_config.json')
     api_config = json.load(f)

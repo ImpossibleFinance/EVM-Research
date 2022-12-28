@@ -5,7 +5,7 @@ from plotly.subplots import make_subplots
 from scripts.Data_API import *
 
 
-def evm_prices():
+def evm_prices_load():
 
     name = "EVM Prices"
 

@@ -4,7 +4,7 @@ The analysis is a comparison of activity on EVM blockchains, including metrics s
 
 ## Links: 🥳
 
-- 
+- Public test: [http://35.179.77.209:5000/]{http://35.179.77.209:5000/}
 
 
 ## Usage on localhost
