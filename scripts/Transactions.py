@@ -7,8 +7,11 @@ from scripts.Data_API import *
 from datetime import timedelta
 
 def txs_distribution(data):
+    last_date = (max(data['Date(UTC)']))
 
-    A = (data.groupby(by = [data["Date(UTC)"].dt.day_name(), data["CHAIN"]])['Value'].mean()).to_frame()
+    last_month_data = (data[data['Date(UTC)'].between((last_date - timedelta(days = 180)), last_date)])
+
+    A = (last_month_data.groupby(by = [last_month_data["Date(UTC)"].dt.day_name(), last_month_data["CHAIN"]])['Value'].mean()).to_frame()
     A['Day of Week'] = A.index.get_level_values(0)
     A['CHAIN'] = A.index.get_level_values(1)
 
@@ -23,7 +26,7 @@ def txs_distribution(data):
     A = A.reset_index(drop=True)
 
 
-    B = (data.groupby(by = data["CHAIN"])['Value'].mean()).to_frame()
+    B = (last_month_data.groupby(by = last_month_data["CHAIN"])['Value'].mean()).to_frame()
     B['CHAIN'] = B.index.get_level_values(0)
     B = B.reset_index(drop=True)
     
@@ -81,6 +84,7 @@ def transactions(data):
         name = "Total transactions count", 
         marker_colors = data_sum['Color'], 
         showlegend=False, 
+        textinfo = 'label+percent',
         marker_line = dict(color='#000000', width=2)
         ), row = 1, col = 2)
     fig.update_layout(
@@ -112,8 +116,9 @@ def transactions(data):
         size = 'Percentage',
         color = 'Percentage',
         height = 700,
+        hover_data = ['Value'],
         color_continuous_scale = px.colors.sequential.Oryel,
-        title = "Distribution by day of week<br><sup>The blue square is the most active day of the week, and the pink star is the most passive</sup><br><sup>Percentage = Average # of transactions for each day divided by Average # of transactions for each chain</sup>"
+        title = "Distribution by day of week (Last 6 months)<br><sup>The blue square is the most active day of the week, and the pink star is the most passive</sup><br><sup>Percentage = Average # of transactions for each day divided by Average # of transactions for each chain</sup>"
     )
     fig2.update_layout(
         xaxis_tickangle = 30,
@@ -177,6 +182,7 @@ def transactions_by_chain_by_time(data):
             x = (globals()[_columns[i]])['Value'],
             y = (globals()[_columns[i]])['CHAIN'],
             orientation='h',
+            showlegend = False,
             name = 'Last ' + _columns[i][-2:],
             marker_color = _color[i],
             text = ['Last ' + _columns[i][-2:] + ' : ' + "%.2f" %(v/1e6) + 'M' for v in (globals()[_columns[i]])['Value']],

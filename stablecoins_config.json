@@ -1,0 +1,26 @@
+[
+    {
+      "token": "USDC",
+      "colors": "#4C59FF"
+    },
+    {
+        "token": "USDT",
+        "colors": "#00B316"
+    },
+    {
+        "token": "BUSD",
+        "colors": "#CFC921"
+    },
+    {
+        "token": "DAI",
+        "colors": "#FFF600"
+    },
+    {
+        "token": "FRAX",
+        "colors": "#DAD9D9"
+    },
+    {
+        "token": "Other",
+        "colors": "#FF0000"
+    }
+]

@@ -12,8 +12,6 @@ from scripts.NFT_mints import *
 from scripts.Prices import *
 from scripts.Stablecoins import *
 
-from scripts.Solana import *
-
 
 def read_data(name):
     df = pd.read_csv('csv_data/' + str(name) + '.csv')
@@ -26,7 +24,7 @@ def read_data(name):
     
     return df
 
-data_name_array = ['data', 'price_data', 'gmt_hour_data', 'nfts_data', 'stable_symbol', 'stable_type', 'solana_data']
+data_name_array = ['data', 'price_data', 'gmt_hour_data', 'nfts_data', 'stablecoins']
 
 for name in data_name_array:
     (globals()[name]) = read_data(str(name))
@@ -44,12 +42,7 @@ fig_gmt_distribution, data_gmt = gmt_hour(gmt_hour_data)
 
 nft_mint = nft_mints(nfts_data)
 
-stablecoins_by_type = stablecoins_charts(stable_type)
-
-
-## Part II
-
-non_evm_txs, non_evm_users, non_evm_price = solana(solana_data, data, price_data)
+stablecoins_chart, stablecoins_stats, stablecoins_MA90_volume, stablecoins_MA90_share, stablecoins_Agg_transfers = stablecoins_charts(stablecoins)
 
 
 ####
@@ -90,7 +83,7 @@ app.layout = html.Div(children=[
                 html.Span("The analysis is a comparison of activity on EVM blockchains, including metrics such as daily transactions, active addresses, as well as average block creation time and daily block count."),
                 html.Span(" Impossible Finance ", className="description-if-and-zb"),
                 html.Span("team has collected the most interesting metrics for you using"),
-                html.Span(" ZettaBlock API ", className="description-if-and-zb"),
+                html.Span(" Dune API ", className="description-if-and-zb"),
                 ],
                 className = "description-main"
             ),
@@ -126,14 +119,64 @@ app.layout = html.Div(children=[
             {
                 "label": html.Span(
                     [
+                        html.Img(src = "assets/bsc.png", height = 15),
+                        html.Span("BNB Chain", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "BNB Chain",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/avalanche.png", height = 15),
+                        html.Span("Avalanche", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "Avalanche",
+            },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/gnosis.png", height = 15),
+                        html.Span("Gnosis Chain", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "Gnosis Chain",
+            },
+            
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/optimism.png", height = 15),
+                        html.Span("Optimism", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "Optimism",
+            },
+
+            {
+                "label": html.Span(
+                    [
                         html.Img(src = "assets/arbitrum.png", height = 15),
                         html.Span("Arbitrum", className = "main-chains-selection"),
                     ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
                 ),
                 "value": "Arbitrum",
             },
+
+            {
+                "label": html.Span(
+                    [
+                        html.Img(src = "assets/fantom.png", height = 15),
+                        html.Span("Fantom", className = "main-chains-selection"),
+                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
+                ),
+                "value": "Fantom",
+            },
         ], 
-        value = ['Ethereum', 'Polygon'],
+        value = ['Ethereum', 'BNB Chain', 'Polygon'],
         multi = True,
         id = 'chain-selections',
         className = "dropdown-table-input"
@@ -288,146 +331,41 @@ app.layout = html.Div(children=[
 
     html.Div(children = [
         html.H2('Stablecoins in EVM chains', className = "price-description"),
+        html.P('In the part below we will look at stablecoins statistic on EVM chains. In order not to clutter up the charts, we chose the top-3 fiat-collateral stablecoins, namely USDC, USDT and BUSD. One algorithmic - FRAX and one crypto-collateral stablecoin - DAI.', className = "stablecoin-description"),
+
         html.Div(children = dcc.Graph(
             id = 'stablecoins-by-type',
-            figure = stablecoins_by_type,
+            figure = stablecoins_chart,
             ),
+            style={'width': '80%', 'display': 'inline-block'},
         ),
-        html.P('Select stablecoins here. So you can choose the stablecoins you want to compare in terms of supply.', className = "price-description"),
+        html.Div(children = dcc.Graph(
+            id = 'stablecoins-stats-today',
+            figure = stablecoins_stats,
+            ),
+            style={'width': '20%', 'display': 'inline-block'},
+        ),
 
-        dcc.Dropdown(
-        [
-            {
-                "label": html.Span(
-                    [
-                        html.Img(src = "assets/usdc.png", height = 15),
-                        html.Span("USDC", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "USDC",
-            },
-
-            {
-                "label": html.Span(
-                    [
-                        html.Img(src = "assets/usdt.png", height = 15),
-                        html.Span("USDT", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "USDT",
-            },
-
-            {
-                "label": html.Span(
-                    [
-                        html.Img(src = "assets/busd.png", height = 15),
-                        html.Span("BUSD", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "BUSD",
-            },
-
-            {
-                "label": html.Span(
-                    [
-                        html.Img(src = "assets/dai.png", height = 15),
-                        html.Span("DAI", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "DAI",
-            },
-
-            {
-                "label": html.Span(
-                    [
-                        html.Img(src = "assets/pax.png", height = 15),
-                        html.Span("PAX", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "PAX",
-            },
-
-            {
-                "label": html.Span(
-                    [
-                        html.Img(src = "assets/lusd.png", height = 15),
-                        html.Span("LUSD", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "LUSD",
-            },
-
-            {
-                "label": html.Span(
-                    [
-                        html.Img(src = "assets/mim.png", height = 15),
-                        html.Span("MIM", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "MIM",
-            },
-
-            {
-                "label": html.Span(
-                    [
-                        html.Img(src = "assets/fei.png", height = 15),
-                        html.Span("FEI", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "FEI",
-            },
-
-            {
-                "label": html.Span(
-                    [
-                        html.Img(src = "assets/susd.png", height = 15),
-                        html.Span("sUSD", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "sUSD",
-            },
-
-            {
-                "label": html.Span(
-                    [
-                        html.Img(src = "assets/ust.png", height = 15),
-                        html.Span("UST", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "UST",
-            },
-
-            {
-                "label": html.Span(
-                    [
-                        html.Img(src = "assets/frax.png", height = 15),
-                        html.Span("FRAX", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "FRAX",
-            },
-
-            {
-                "label": html.Span(
-                    [
-                        html.Img(src = "assets/alchemix.png", height = 15),
-                        html.Span("Alchemix", className = "main-chains-selection"),
-                    ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
-                ),
-                "value": "ALUSD",
-            },
-            
-        ], 
-        value = ['USDC', 'USDT', 'BUSD', 'DAI'],
-        multi = True,
-        id = 'stablecoins-selections',
-        className = "dropdown-table-input"
-    ),
 
         html.Div(children = dcc.Graph(
-            id = 'stablecoins-by-symbol',
+            id = 'stablecoins-90ma-transfer-volume',
+            figure = stablecoins_MA90_volume,
             ),
+            style={'width': '60%', 'display': 'inline-block'},
         ),
+
+        html.Div(children = dcc.Graph(
+            id = 'stablecoins-90ma-transfer-volume-share',
+            figure = stablecoins_MA90_share,
+            ),
+            style={'width': '40%', 'display': 'inline-block'},
+        ),
+
+        dcc.Graph(
+            id = 'stablecoins-aggregated-transfers',
+            figure = stablecoins_Agg_transfers
+        ),
+
     ], className = "bridge-border"
     ),
 
@@ -441,36 +379,6 @@ app.layout = html.Div(children=[
     ),
     dcc.Graph(
         id='evm-price-plot'
-    ),
-
-    # Part II
-
-    html.Div([
-        html.Img(src = "assets/ethereum.png", alt = " ", className = "evm-ico"),
-        html.H1(
-            ' EVM VS Non-EVM Blockchains ', 
-        ),
-        html.Img(src = "assets/solana.png", alt = " ", className = "nonevm-ico"),
-    ],
-    className = "header-title"
-    ),
-
-    html.Div(children = dcc.Graph(
-        id = 'evm-vs-non-evm-txs',
-        figure = non_evm_txs,
-        ),
-        style={'width': '50%', 'display': 'inline-block'},
-    ),
-    html.Div(children = dcc.Graph(
-        id = 'evm-vs-non-evm-users',
-        figure = non_evm_users,
-        ),
-        style={'width': '50%', 'display': 'inline-block'},
-    ),
-
-    dcc.Graph(
-        id = 'non-evm-price',
-        figure = non_evm_price
     ),
 
     # The END
@@ -623,30 +531,6 @@ def specific_chain_gmt(hoverData):
             xaxis_title = "Transactions", 
             yaxis_title = "GMT Hour",
             height = 500,
-            plot_bgcolor = '#171730',
-            paper_bgcolor = '#171730',
-            font = dict(color = 'white')
-        )
-
-        return fig
-
-
-#callback for stablecoins
-@app.callback(
-    Output('stablecoins-by-symbol', 'figure'),
-    Input('stablecoins-selections', 'value')
-)
-def update_stablecoins(value):
-    if value:
-        fig = stablecoins_callback(stable_symbol.loc[stable_symbol['symbol'].isin(value)])
-
-        return fig
-
-    else:
-        fig = go.Figure()
-
-        fig.update_layout(
-            height = 400,
             plot_bgcolor = '#171730',
             paper_bgcolor = '#171730',
             font = dict(color = 'white')

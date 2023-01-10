@@ -7,8 +7,6 @@ from scripts.NFT_mints import *
 
 from scripts.Stablecoins import *
 
-from scripts.Solana import *
-
 data = merge_data()
 price_data = evm_prices_load()
 gmt_hour_data = gmt_data_load()
@@ -16,9 +14,7 @@ nfts_data = nfts_data_load()
 
 stable_symbol, stable_type = stablecoins_data_load()
 
-solana_data = solana_upload()
-
-data_name_array = ['data', 'price_data', 'gmt_hour_data', 'nfts_data', 'stable_symbol', 'stable_type', 'solana_data']
+data_name_array = ['data', 'price_data', 'gmt_hour_data', 'nfts_data', 'stable_symbol', 'stable_type']
 
 
 for name in data_name_array:
@@ -27,9 +23,9 @@ for name in data_name_array:
         if 'Date(UTC)' in df:
             data_from_file = pd.read_csv('csv_data/' + str(name) + '.csv')
 
-            first_date = (min(data['Date(UTC)']))
+            first_date = (min(df['Date(UTC)']))
 
-            result = pd.concat([data_from_file[data_from_file["Date(UTC)"] <= first_date], df[df["Date(UTC)"] >= first_date]], ignore_index=True)
+            result = pd.concat([data_from_file[data_from_file["Date(UTC)"] <= first_date], df[df["Date(UTC)"] > first_date]], ignore_index=True)
             result.to_csv('csv_data/' + str(name) + '.csv', index = False)
 
             print("Rewriting CSV with new dates " + name)

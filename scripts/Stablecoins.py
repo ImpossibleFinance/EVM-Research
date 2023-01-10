@@ -7,69 +7,71 @@ from scripts.Data_API import *
 
 def stablecoins_data_load():
 
-    name_symbol = "Stablecoins by symbol"
-    name_type = "Stablecoins by type"
+    #name_symbol = "Stablecoins by symbol"
+    #name_type = "Stablecoins by type"
 
-    f = open('requests_config.json')
-    api_config = json.load(f)
-
-
-    data_symbol = data_by_url(
-        ((list(filter(lambda x:x["api_name"] == name_symbol ,api_config)))[0]["zettablock_api"]),
-        ((list(filter(lambda x:x["api_name"] == name_symbol ,api_config)))[0]["api_name"])
-    )
-
-    data_type = data_by_url(
-        ((list(filter(lambda x:x["api_name"] == name_type ,api_config)))[0]["zettablock_api"]),
-        ((list(filter(lambda x:x["api_name"] == name_type ,api_config)))[0]["api_name"])
-    )
-
-    f.close()
-
-    return data_symbol, data_type
+    #f = open('cha.json')
+    #api_config = json.load(f)
 
 
-def stablecoins_charts(data_by_type):
+    #data_symbol = data_by_url(
+    #    ((list(filter(lambda x:x["api_name"] == name_symbol ,api_config)))[0]["zettablock_api"]),
+    #    ((list(filter(lambda x:x["api_name"] == name_symbol ,api_config)))[0]["api_name"])
+    #)
 
-    unique_types = data_by_type['stable'].unique()
+    #data_type = data_by_url(
+    #    ((list(filter(lambda x:x["api_name"] == name_type ,api_config)))[0]["zettablock_api"]),
+    #    ((list(filter(lambda x:x["api_name"] == name_type ,api_config)))[0]["api_name"])
+    #)
 
-    todays_data_by_type = data_by_type[data_by_type["Date(UTC)"] == data_by_type["Date(UTC)"][max(data_by_type.index)]]
-    todays_data_by_type = todays_data_by_type.sort_values(by=['TVL_eth_by_type'])
+    #f.close()
+
+    return 1
+
+
+def stablecoins_charts(data):
+
+    f = open('stablecoins_config.json')
+    chains_config = json.load(f)
+
+    data['total_tvl'] = data.sort_values(by=['Date(UTC)'], ascending=True).groupby(['stable'])['tvl'].cumsum()
+    data['ma90'] = data.sort_values(by=['Date(UTC)'], ascending=True)\
+                    .groupby('stable')['send_amount']\
+                    .rolling(90, min_periods = 1).mean()\
+                    .reset_index(drop=True, level=0)
+    data['year'] = pd.DatetimeIndex(data['Date(UTC)']).year
+    data['agg_transfer_volume'] = data.sort_values(by=['Date(UTC)'], ascending=True)\
+                       .groupby(by = ['year', 'stable'])['send_amount']\
+                       .cumsum()
+
+    todays_data_by_type = data[data["Date(UTC)"] == data["Date(UTC)"][max(data.index)]]
+    todays_data_by_type = todays_data_by_type.sort_values(by=['total_tvl'])
     todays_data_by_type = todays_data_by_type.reset_index(drop=True)
 
-    fig = make_subplots(
-        rows = 1, 
-        cols = 2, 
-        column_widths = [0.80, 0.20],
-        specs=[[{'type':'xy'}, {'type':'xy'}]]
-    )
+    fig = go.Figure()
 
-    for type in unique_types:
-        data_chain = data_by_type[data_by_type["stable"] == type]
+    for type in todays_data_by_type['stable']:
+        data_chain = data[data["stable"] == type]
         fig.add_trace(go.Scatter(
             x = data_chain["Date(UTC)"], 
-            y = data_chain["TVL_eth_by_type"],
+            y = data_chain["total_tvl"],
             name = type,
             showlegend = False,
-            ), row = 1, col = 1)
-
-    fig.add_trace(go.Bar(
-        x = todays_data_by_type['stable'],
-        y = todays_data_by_type['TVL_eth_by_type'],
-        name = '',
-        marker_color = '#F05DF2',
-        showlegend = False
-    ), row = 1, col = 2)
+            fill = 'tonexty',
+            stackgroup = 'one',
+            marker_color = ((list(filter(lambda x:x["token"] == type,chains_config)))[0]["colors"])
+            ))
 
     fig.update_layout(
-        title = "Stablecoins supply by type<br><sup></sup>", 
+        title = "Stablecoins supply<br><sup></sup>", 
         xaxis_title = "Date", 
         yaxis_title = "Supply (USD)",
-        height = 600,
+        height = 650,
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
         font = dict(color = 'white')
     )
+
     fig.update_xaxes(
         rangeselector=dict(
             buttons=list([
@@ -84,30 +86,108 @@ def stablecoins_charts(data_by_type):
     fig.update_layout(xaxis=dict(rangeselector = dict(font = dict( color = "black"))))
 
 
-    return fig
+    fig2 = go.Figure()
 
-def stablecoins_callback(data_by_tokens):
-    unique_symbols = data_by_tokens['symbol'].unique()
+    k = 0
 
-    fig = go.Figure()
-
-    for symbol in unique_symbols:
-        data_token = data_by_tokens[data_by_tokens["symbol"] == symbol]
-        fig.add_trace(go.Scatter(
-            x = data_token["Date(UTC)"], 
-            y = data_token["TVL_eth_by_symbol"],
-            name = symbol,
-            showlegend = False
+    for index in todays_data_by_type['stable']:
+        temp = todays_data_by_type[todays_data_by_type["stable"] == index]
+        reference = float(temp['total_tvl'])-float(temp['tvl'])
+        
+        
+        fig2.add_trace(go.Indicator(
+            mode = "number+delta",
+            value = float(temp['total_tvl']),
+            delta = {'reference': reference, 'relative': True},
+            domain = {'row': k, 'column': 1},
+            title = dict(
+                text = index
+            ),
             ))
 
-    fig.update_layout(
-        title = "Stablecoins supply by symbol<br><sup></sup>", 
+        k += 1
+
+    fig2.update_layout(
+        title = "Stablecoins supply on last day", 
+        height = 700,
+        plot_bgcolor = '#171730',
+        paper_bgcolor = '#171730',
+        font = dict(color = 'white'),
+        grid = {'rows': k, 'columns': 1, 'pattern': "independent"},
+    )
+
+
+    # Transfer Volume
+
+    fig_ma = go.Figure()
+    fig_ma_share = go.Figure()
+    fig_agg = go.Figure()
+
+    for type in todays_data_by_type['stable']:
+        data_chain = data[data["stable"] == type]
+        fig_ma.add_trace(go.Scatter(
+            x = data_chain["Date(UTC)"], 
+            y = data_chain["ma90"],
+            name = type,
+            showlegend = False,
+            marker_color = ((list(filter(lambda x:x["token"] == type,chains_config)))[0]["colors"])
+            ))
+
+        fig_agg.add_trace(go.Scatter(
+            x = data_chain["Date(UTC)"], 
+            y = data_chain["agg_transfer_volume"],
+            name = type,
+            showlegend = False,
+            mode = 'lines',
+            stackgroup = 'one',
+            marker_color = ((list(filter(lambda x:x["token"] == type,chains_config)))[0]["colors"])
+            ))
+
+        fig_ma_share.add_trace(go.Scatter(
+            x = data_chain["Date(UTC)"], 
+            y = data_chain["ma90"],
+            name = type,
+            showlegend = False,
+            stackgroup = 'one',
+            groupnorm = 'percent',
+            marker_color = ((list(filter(lambda x:x["token"] == type,chains_config)))[0]["colors"])
+            ))
+
+    fig_ma.update_layout(
+        title = "Daily On-Chain Transfer Volume (90MA)<br><sup>90-day moving average on-chain volume and it's market share</sup>", 
         xaxis_title = "Date", 
-        yaxis_title = "Supply (USD)",
+        yaxis_title = "Volume (90MA) (USD)",
         height = 600,
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
         font = dict(color = 'white')
     )
 
-    return fig
+    fig_agg.update_layout(
+        title = "Stablecoins Aggregated Transactions Volume<br><sup></sup>", 
+        xaxis_title = "Date", 
+        yaxis_title = "Volume transfered (USD)",
+        height = 600,
+        plot_bgcolor = '#171730',
+        paper_bgcolor = '#171730',
+        font = dict(color = 'white')
+    )
+
+    fig_ma_share.update_layout(
+        #title = "Stablecoins Aggregated Transactions Volume<br><sup></sup>", 
+        xaxis_title = "Date", 
+        yaxis_title = "Volume share (%)",
+        height = 600,
+        plot_bgcolor = '#171730',
+        paper_bgcolor = '#171730',
+        font = dict(color = 'white'),
+        yaxis = dict(
+            type = 'linear',
+            range = [1, 100],
+            ticksuffix = '%'
+        )
+    )
+
+    f.close()
+
+    return fig, fig2, fig_ma, fig_ma_share, fig_agg

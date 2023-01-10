@@ -38,7 +38,7 @@ def gmt_hour(data):
             ))
 
     fig.update_layout(
-        title = "Distribution of EVM Transactions by GMT hour<br><sup>Distribution of the average number of transactions each GMT hour, to get a separate graph hover your mouse over the desired chain</sup>", 
+        title = "Distribution of EVM Transactions by GMT hour (Last 1 month)<br><sup>Distribution of the average number of transactions each GMT hour, to get a separate graph hover your mouse over the desired chain</sup>", 
         xaxis_title = "GMT Hour", 
         yaxis_title = "Average # of Transactions",
         height = 500,
