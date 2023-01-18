@@ -1,8 +1,6 @@
 import json
 import plotly.graph_objs as go
 import plotly.express as px
-from plotly.subplots import make_subplots
-from scripts.Data_API import *
 
 from datetime import timedelta
 
@@ -60,43 +58,29 @@ def transactions(data):
 
     # Plots
 
-    fig = make_subplots(
-        rows = 1, 
-        cols = 2, 
-        column_widths = [0.8, 0.2],
-        specs=[[{'type':'xy'}, {'type':'domain'}]]
-    )
+    fig_over_time = go.Figure()
 
     for chain in chains:
         data_chain = data[data["CHAIN"] == chain]
-        fig.add_trace(go.Scatter(
+        fig_over_time.add_trace(go.Scatter(
             x = data_chain["Date(UTC)"], 
             y = data_chain["Value"],
             name = chain,
             showlegend = False,
             marker_color = ((list(filter(lambda x:x["chain_name"]==chain,chains_config)))[0]["colors"])
-            ), 
-            row = 1, col = 1)
+            ))
 
-    fig.add_trace(go.Pie(
-        labels = data_sum['CHAIN'], 
-        values = data_sum['Value'], 
-        name = "Total transactions count", 
-        marker_colors = data_sum['Color'], 
-        showlegend=False, 
-        textinfo = 'label+percent',
-        marker_line = dict(color='#000000', width=2)
-        ), row = 1, col = 2)
-    fig.update_layout(
-        title = "EVM Transactions over time<br><sup>Transactions count each day and pie chart - the total number of transactions for all time</sup>", 
+    fig_over_time.update_layout(
+        title = "EVM Transactions over time<br><sup>Daily number of transactions. Select chains you wanted above</sup>", 
         xaxis_title = "Date", 
         yaxis_title = "Transactions",
-        height = 500,
+        height = 600,
+        hovermode = "x unified",
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
         font = dict(color = 'white')
     )
-    fig.update_xaxes(
+    fig_over_time.update_xaxes(
         rangeselector=dict(
             buttons=list([
                 dict(count=1, label="1m", step="month", stepmode="backward"),
@@ -107,9 +91,51 @@ def transactions(data):
             ])
         )
     )
-    fig.update_layout(xaxis=dict(rangeselector = dict(font = dict( color = "black"))))
+    fig_over_time.update_layout(xaxis=dict(rangeselector = dict(font = dict( color = "black"))))
 
-    fig2 = px.scatter(
+    #Indicators
+
+    fig_total_txs = go.Figure()
+
+    columns = 0
+    rows = 0
+
+    todays_data = data[data["Date(UTC)"] == data["Date(UTC)"][max(data.index)]]
+
+    max_of_total_txs = ((data_sum.loc[data_sum['Value'].idxmax()])['Value'])
+
+    for index in data_sum['CHAIN']:
+        temp = data_sum[data_sum['CHAIN'] == index]
+        temp_today = todays_data[todays_data['CHAIN'] == index]
+        reference = float(temp['Value'])-float(temp_today['Value'])
+        
+        if columns == 4:
+            columns = 0
+            rows += 1
+
+        fig_total_txs.add_trace(go.Indicator(
+            domain = {'row': rows, 'column': columns},
+            value = float(temp['Value']),
+            mode = "gauge+number+delta",
+            title = dict(
+                text = index
+            ),
+            delta = {'reference': reference},
+
+            gauge = {'axis': {'range': [None, max_of_total_txs]}}))
+
+        columns += 1
+
+    fig_total_txs.update_layout(
+        height = 700,
+        plot_bgcolor = '#171730',
+        paper_bgcolor = '#171730',
+        font = dict(color = 'white'),
+        grid = {'rows': (rows + 1), 'columns': 4 if rows == 1 else columns, 'pattern': "independent"},
+    )
+    #Day of week
+
+    fig_by_day_of_week = px.scatter(
         res_distribution,
         x = 'Day of Week',
         y = 'CHAIN',
@@ -118,9 +144,9 @@ def transactions(data):
         height = 700,
         hover_data = ['Value'],
         color_continuous_scale = px.colors.sequential.Oryel,
-        title = "Distribution by day of week (Last 6 months)<br><sup>The blue square is the most active day of the week, and the pink star is the most passive</sup><br><sup>Percentage = Average # of transactions for each day divided by Average # of transactions for each chain</sup>"
+        title = "Distribution by day of week (Last 6 months) [WIP]<br><sup>The blue square is the most active day of the week, and the pink star is the most passive</sup><br><sup>Percentage = Average # of transactions for each day divided by Average # of transactions for each chain</sup>"
     )
-    fig2.update_layout(
+    fig_by_day_of_week.update_layout(
         xaxis_tickangle = 30,
         title = dict( x = 0.5),
         xaxis_tickfont = dict(size = 9),
@@ -133,7 +159,7 @@ def transactions(data):
 
     for chain in chains:
         row = res_distribution[res_distribution["CHAIN"] == chain]['Value'].idxmax()
-        fig2.add_trace(go.Scatter(
+        fig_by_day_of_week.add_trace(go.Scatter(
             x = [res_distribution.loc[[row]]['Day of Week']], 
             y = [chain], 
             mode = 'markers',
@@ -147,7 +173,7 @@ def transactions(data):
 
     for chain in chains:
         row = res_distribution[res_distribution["CHAIN"] == chain]['Value'].idxmin()
-        fig2.add_trace(go.Scatter(
+        fig_by_day_of_week.add_trace(go.Scatter(
             x = [res_distribution.loc[[row]]['Day of Week']], 
             y = [chain], 
             mode = 'markers',
@@ -161,7 +187,7 @@ def transactions(data):
 
     f.close()
 
-    return fig, fig2
+    return fig_over_time, fig_by_day_of_week, fig_total_txs
 
 
 def transactions_by_chain_by_time(data):

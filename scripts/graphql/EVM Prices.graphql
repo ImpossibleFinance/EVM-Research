@@ -1,7 +1,0 @@
-{
-    records {
-        DATE,
-        TOKEN,
-        PRICE
-    }
-}

@@ -1,7 +1,0 @@
-{
-    records {
-        date,
-        stable,
-        TVL_eth_by_type
-    }
-}

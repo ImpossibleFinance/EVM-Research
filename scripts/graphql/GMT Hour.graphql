@@ -1,7 +1,0 @@
-{
-    records {
-        GMT_HOUR,
-        Chain,
-        AVG_TXS_COUNT
-    }
-}

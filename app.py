@@ -1,6 +1,5 @@
 from dash import Dash, html, dcc, dash_table, callback_context
 from dash.dependencies import Input, Output
-from merge import *
 import flask
 
 from scripts.Transactions import *
@@ -32,13 +31,13 @@ for name in data_name_array:
 #### Load data
 
 table_data, last_date = table_data(data)
-fig_txs, txs_histogram = transactions(data)
-fig_addresses = active_addresses(data)
+fig_txs, txs_histogram, txs_total = transactions(data)
+fig_addresses, fig_addresses_distribution = active_addresses(data)
 block_time, blocks_count = blocks(data)
 
 avg_tx_by_chain = transactions_by_chain_by_time(data)
 
-fig_gmt_distribution, data_gmt = gmt_hour(gmt_hour_data)
+fig_gmt_distribution = gmt_hour(gmt_hour_data)
 
 nft_mint = nft_mints(nfts_data)
 
@@ -66,7 +65,7 @@ app.layout = html.Div(children=[
             html.Div([
                 html.Img(src = "assets/IF.png", alt = " ", className = "if-ico"),
                 html.H1(
-                    ' EVM Blockchains Analysis (Open Beta)', 
+                    ' EVM Blockchains Analysis (Open Beta V 0.3)', 
                 ),
             ],
             className = "header-title"
@@ -92,7 +91,7 @@ app.layout = html.Div(children=[
 
     html.Div( children = [
     html.H1('Before you begin, please select the chains you wish to review:', className = "price-description"),
-    html.P('This choice will affect all of the charts in the 1st part except the Interactive table and Distribution by GMT Hour chart', className = "price-description"),
+    #html.P('This choice will affect all of the charts in the 1st part except the Interactive table and Distribution by GMT Hour chart', className = "price-description"),
 
     dcc.Dropdown(
         [
@@ -119,7 +118,7 @@ app.layout = html.Div(children=[
             {
                 "label": html.Span(
                     [
-                        html.Img(src = "assets/bsc.png", height = 15),
+                        html.Img(src = "assets/bnb.png", height = 15),
                         html.Span("BNB Chain", className = "main-chains-selection"),
                     ], style={'display': 'inline-flex', 'align-items': 'center', 'justify-content': 'center'}
                 ),
@@ -184,118 +183,16 @@ app.layout = html.Div(children=[
     ], className = "chains-input-main"
     ),
 
-    html.Div( children = [
-    html.H2('Interactive Data table', className = "table-name"),
-    html.Div(children = [
-        html.P(id = 'table_out_p1'),
-        html.P(id = 'table_out_p2'),
-        html.P(id = 'table_out_p3'),
-    ], className = "table-output"
-    ),
+    html.H1('Total number of transactions since the launch', className = "price-description"),
 
-    dash_table.DataTable(
-        id = 'table',
-        columns = [{"name": i, "id": i} 
-                 for i in table_data.columns],
-        data = table_data.to_dict('records'),
-        style_cell = dict(textAlign = 'left'),
-        style_header = dict(backgroundColor = "paleturquoise"),
-        style_data = dict(backgroundColor = "lavender"),
-        style_data_conditional = [
-        {
-            'if': {
-                'filter_query': '{Pct txs} > 0',
-                'column_id': '# of Transactions'
-            },
-            'color': 'green',
-            'fontWeight': 'bold'
-        },
-        {
-            'if': {
-                'filter_query': '{Pct txs} < 0',
-                'column_id': '# of Transactions'
-            },
-            'color': 'red',
-            'fontWeight': 'bold'
-        },
-
-        {
-            'if': {
-                'filter_query': '{Pct addresses} > 0',
-                'column_id': '# of Active addresses'
-            },
-            'color': 'green',
-            'fontWeight': 'bold'
-        },
-        {
-            'if': {
-                'filter_query': '{Pct addresses} < 0',
-                'column_id': '# of Active addresses'
-            },
-            'color': 'red',
-            'fontWeight': 'bold'
-        },
-
-        {
-            'if': {
-                'filter_query': '{Pct time} > 0',
-                'column_id': 'Block time [s]'
-            },
-            'color': 'green',
-            'fontWeight': 'bold'
-        },
-        {
-            'if': {
-                'filter_query': '{Pct time} < 0',
-                'column_id': 'Block time [s]'
-            },
-            'color': 'red',
-            'fontWeight': 'bold'
-        },
-
-        {
-            'if': {
-                'filter_query': '{Pct blocks} > 0',
-                'column_id': '# of Blocks'
-            },
-            'color': 'green',
-            'fontWeight': 'bold'
-        },
-        {
-            'if': {
-                'filter_query': '{Pct blocks} < 0',
-                'column_id': '# of Blocks'
-            },
-            'color': 'red',
-            'fontWeight': 'bold'
-        },
-        ],
-        style_cell_conditional = [
-            {
-            'if': {'column_id': c},
-            'display': 'none'
-            } for c in ['Pct txs', 'Pct addresses', 'Pct time', 'Pct blocks', 'Value', 'Active addresses', 'Block time', 'Blocks count']
-        ],
-    ), 
-    ], className = "table"
+    dcc.Graph(
+        id='total-txs-indicators',
+        figure = txs_total
     ),
 
     dcc.Graph(
         id='transactions-over-time',
         figure = fig_txs
-    ),
-
-    html.Div(children = dcc.Graph(
-        id = 'transactions-gmt-distribution',
-        figure = fig_gmt_distribution,
-        ),
-        style={'width': '70%', 'display': 'inline-block'},
-    ),
-
-    html.Div(children = dcc.Graph(
-        id = 'transactions-gmt-distribution-specific-chain'
-        ),
-        style={'width': '30%', 'display': 'inline-block'},
     ),
 
     html.Div(children = dcc.Graph(
@@ -311,9 +208,24 @@ app.layout = html.Div(children=[
         style={'width': '50%', 'display': 'inline-block'},
     ),
 
-    dcc.Graph(
-        id='addresses-over-time',
-        figure=fig_addresses
+    html.Div(children = dcc.Graph(
+        id = 'transactions-gmt-distribution',
+        figure = fig_gmt_distribution,
+        )
+    ),
+
+
+    html.Div(children = dcc.Graph(
+        id = 'addresses-over-time',
+        figure = fig_addresses
+        ),
+        style={'width': '65%', 'display': 'inline-block'},
+    ),
+    html.Div(children = dcc.Graph(
+        id = 'addresses-histogram',
+        figure = fig_addresses_distribution,
+        ),
+        style={'width': '35%', 'display': 'inline-block'},
     ),
 
     dcc.Graph(
@@ -400,31 +312,27 @@ app.layout = html.Div(children=[
     Output('transactions-over-time', 'figure'),
     Output('txs-histogram', 'figure'),
     Output('addresses-over-time', 'figure'),
+    Output('addresses-histogram', 'figure'),
     Output('block-time', 'figure'),
     Output('blocks-count', 'figure'),
     Output('txs-avg-txs-distribution', 'figure'),
-    Output('nft-mint-count', 'figure'),
+    Output('total-txs-indicators', 'figure'),
+    Output('transactions-gmt-distribution', 'figure'),
     Input('chain-selections', 'value')
 )
 def update_output(value):
     if value:
-        fig_txs, txs_histogram = transactions(data.loc[data['CHAIN'].isin(value)])
+        fig_txs, txs_histogram, txs_total = transactions(data.loc[data['CHAIN'].isin(value)])
 
-        fig_addresses = active_addresses(data.loc[data['CHAIN'].isin(value)])
+        fig_addresses, fig_addresses_distribution = active_addresses(data.loc[data['CHAIN'].isin(value)])
 
         block_time, blocks_count = blocks(data.loc[data['CHAIN'].isin(value)])
 
         avg_tx_by_chain = transactions_by_chain_by_time(data.loc[data['CHAIN'].isin(value)])
 
-        nfts_value = []
-
-        for x in value:
-            nfts_value.append(x + " ERC-721")
-            nfts_value.append(x + " ERC-1155")
-
-        nft_mint = nft_mints(nfts_data.loc[nfts_data['CHAIN'].isin(nfts_value)])
+        fig_gmt_distribution = gmt_hour(gmt_hour_data.loc[gmt_hour_data['CHAIN'].isin(value)])
             
-        return fig_txs, txs_histogram, fig_addresses, block_time, blocks_count, avg_tx_by_chain, nft_mint
+        return fig_txs, txs_histogram, fig_addresses, fig_addresses_distribution, block_time, blocks_count, avg_tx_by_chain, txs_total, fig_gmt_distribution
 
     else:
         fig = go.Figure()
@@ -437,106 +345,6 @@ def update_output(value):
         )
 
         return fig, fig, fig, fig, fig, fig, fig
-
-
-# callback for table
-@app.callback(
-    Output('table_out_p1', 'children'), 
-    Input('table', 'active_cell'))
-def update_graphs(active_cell):
-    if active_cell and active_cell['column_id'] != 'CHAIN':
-        return_data = str(table_data.iloc[active_cell['row']]['CHAIN']) + " " + str(active_cell['column_id']) + ":"
-        return return_data
-    return " "
-
-@app.callback(
-    Output('table_out_p2', 'children'), 
-    Input('table', 'active_cell'))
-def update_graphs(active_cell):
-    if active_cell and active_cell['column_id'] != 'CHAIN':
-        cell_data = table_data.iloc[active_cell['row']][active_cell['column_id']]
-        return_data = "On " + str(last_date) + " : " + str(cell_data)
-        return return_data
-    return "Click the table"
-
-@app.callback(
-    Output('table_out_p3', 'children'), 
-    Input('table', 'active_cell'))
-def update_graphs(active_cell):
-    if active_cell and active_cell['column_id'] != 'CHAIN':
-        return_data = " Average value for last 1M:"
-
-        if str(active_cell['column_id']) == '# of Transactions':
-            return_data = return_data + " " + str("{:,.1f}".format(round(table_data.iloc[active_cell['row']]['Value'], 0)))
-        if str(active_cell['column_id']) == '# of Active addresses':
-            return_data = return_data + " " + str("{:,.1f}".format(round(table_data.iloc[active_cell['row']]['Active addresses'], 0)))
-        if str(active_cell['column_id']) == 'Block time [s]':
-            return_data = return_data + " " + str("{:,.2f}".format(round(table_data.iloc[active_cell['row']]['Block time'], 2)))
-        if str(active_cell['column_id']) == '# of Blocks':
-            return_data = return_data + " " + str("{:,.1f}".format(round(table_data.iloc[active_cell['row']]['Blocks count'], 0)))
-        return return_data
-    return "Percentage in brackets is the difference between current value & average value for last 1 month"
-
-
-
-
-
-# callback for gmt distribution
-
-@app.callback(
-    Output('transactions-gmt-distribution-specific-chain', 'figure'),
-    Input('transactions-gmt-distribution', 'hoverData')
-)
-def specific_chain_gmt(hoverData):
-    if hoverData:
-        _chain_list = ((data_gmt[data_gmt.index == hoverData['points'][0]['curveNumber']]['CHAIN']).to_string()).split(" ")
-        if _chain_list[len(_chain_list)-2] != '':
-            chain = _chain_list[len(_chain_list)-2] + ' ' + _chain_list[len(_chain_list)-1]
-        else:
-            chain = _chain_list[len(_chain_list)-1]    
-
-        data_chain = data_gmt[data_gmt["CHAIN"] == chain]
-
-        f2 = open('chains_config.json')
-        chains_config = json.load(f2)
-
-        fig = go.Figure()
-
-        fig.add_trace(go.Bar(
-            x = data_chain['AVG_TXS_COUNT'],
-            y = data_chain['GMT_HOUR'],
-            orientation = 'h',
-            marker_color = ((list(filter(lambda x:x["chain_name"]==chain,chains_config)))[0]["colors"])
-        ))
-
-        fig.update_layout(
-            title = "Distribution for " + chain + ":", 
-            xaxis_title = "Transactions", 
-            yaxis_title = "GMT Hour",
-            height = 500,
-            plot_bgcolor = '#171730',
-            paper_bgcolor = '#171730',
-            font = dict(color = 'white')
-        )
-
-        fig.update_xaxes(type = "log")
-
-        f2.close()
-
-        return fig
-    else:
-        fig = go.Figure()
-
-        fig.update_layout(
-            xaxis_title = "Transactions", 
-            yaxis_title = "GMT Hour",
-            height = 500,
-            plot_bgcolor = '#171730',
-            paper_bgcolor = '#171730',
-            font = dict(color = 'white')
-        )
-
-        return fig
 
 # callback for evm prices
 

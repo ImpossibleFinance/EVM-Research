@@ -1,42 +1,32 @@
 [
     {
       "api_name": "Main info",
+      "file_name": "data",
       "flipside_api": "-",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_77c1910642d54f328bc8c98a8297292f/graphql"
+      "dune_id": "1687415"
     },
     {
       "api_name": "GMT Hour",
+      "file_name": "gmt_hour_data",
       "flipside_api": "3b8f45f6-eee0-44e9-bcac-57ee33b31fbb/data/latest",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_aa61cf7981d34e479d66fdf78c55f89b/graphql"
+      "dune_id": "1688067"
     },
     {
       "api_name": "NFT mints",
+      "file_name": "-",
       "flipside_api": "-",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_54751845373b463689fcd9ef242769e4/graphql"
-    },
-    {
-      "api_name": "Bridges Activity",
-      "flipside_api": "-",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_9c6aa6fb634d436398d799e39a016489/graphql"
+      "dune_id": "-"
     },
     {
       "api_name": "EVM Prices",
+      "file_name": "price_data",
       "flipside_api": "-",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_e8ba96aff17f48a69f86131ff09eba68/graphql"
+      "dune_id": "1884835"
     },
     {
-      "api_name": "Solana Metrics",
+      "api_name": "Stablecoins",
+      "file_name": "stablecoins",
       "flipside_api": "-",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_412f8874ab404c7c890f8a6aba4a8861/graphql"
-    },
-    {
-      "api_name": "Stablecoins by type",
-      "flipside_api": "-",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_84fb83b2c77247d49e9db8feefba6711/graphql"
-    },
-    {
-      "api_name": "Stablecoins by symbol",
-      "flipside_api": "-",
-      "zettablock_api": "https://api.zettablock.com/api/v1/dataset/sq_fe1b4609bee44710bbd9ac715de66f96/graphql"
+      "dune_id": "1862391"
     }
 ]

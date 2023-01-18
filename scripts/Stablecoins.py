@@ -1,32 +1,6 @@
 import json
 import plotly.graph_objs as go
-import plotly.express as px
-from plotly.subplots import make_subplots
-from scripts.Data_API import *
-
-
-def stablecoins_data_load():
-
-    #name_symbol = "Stablecoins by symbol"
-    #name_type = "Stablecoins by type"
-
-    #f = open('cha.json')
-    #api_config = json.load(f)
-
-
-    #data_symbol = data_by_url(
-    #    ((list(filter(lambda x:x["api_name"] == name_symbol ,api_config)))[0]["zettablock_api"]),
-    #    ((list(filter(lambda x:x["api_name"] == name_symbol ,api_config)))[0]["api_name"])
-    #)
-
-    #data_type = data_by_url(
-    #    ((list(filter(lambda x:x["api_name"] == name_type ,api_config)))[0]["zettablock_api"]),
-    #    ((list(filter(lambda x:x["api_name"] == name_type ,api_config)))[0]["api_name"])
-    #)
-
-    #f.close()
-
-    return 1
+import pandas as pd
 
 
 def stablecoins_charts(data):
@@ -67,6 +41,7 @@ def stablecoins_charts(data):
         xaxis_title = "Date", 
         yaxis_title = "Supply (USD)",
         height = 650,
+        hovermode = "x unified",
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
         font = dict(color = 'white')
@@ -110,6 +85,7 @@ def stablecoins_charts(data):
     fig2.update_layout(
         title = "Stablecoins supply on last day", 
         height = 700,
+        hovermode = "x unified",
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
         font = dict(color = 'white'),
@@ -158,6 +134,7 @@ def stablecoins_charts(data):
         xaxis_title = "Date", 
         yaxis_title = "Volume (90MA) (USD)",
         height = 600,
+        hovermode = "x unified",
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
         font = dict(color = 'white')
@@ -168,16 +145,17 @@ def stablecoins_charts(data):
         xaxis_title = "Date", 
         yaxis_title = "Volume transfered (USD)",
         height = 600,
+        hovermode = "x unified",
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
         font = dict(color = 'white')
     )
 
     fig_ma_share.update_layout(
-        #title = "Stablecoins Aggregated Transactions Volume<br><sup></sup>", 
         xaxis_title = "Date", 
         yaxis_title = "Volume share (%)",
         height = 600,
+        hovermode = "x unified",
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
         font = dict(color = 'white'),

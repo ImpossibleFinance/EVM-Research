@@ -1,26 +1,7 @@
 import json
 import plotly.graph_objs as go
-import plotly.express as px
 from plotly.subplots import make_subplots
-from scripts.Data_API import *
 
-
-def evm_prices_load():
-
-    name = "EVM Prices"
-
-    f = open('requests_config.json')
-    api_config = json.load(f)
-
-
-    data = data_by_url(
-        ((list(filter(lambda x:x["api_name"] == name ,api_config)))[0]["zettablock_api"]),
-        ((list(filter(lambda x:x["api_name"] == name ,api_config)))[0]["api_name"])
-    )
-
-    f.close()
-
-    return data
 
 
 def evm_prices_chart(data, token):

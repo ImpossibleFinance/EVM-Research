@@ -3,3 +3,4 @@ __pycache__
 .DS_Store
 .env
 csv_data
+DUNE TEST.ipynb
