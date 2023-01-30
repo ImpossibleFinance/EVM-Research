@@ -73,7 +73,7 @@ def stablecoins_charts(data):
         fig2.add_trace(go.Indicator(
             mode = "number+delta",
             value = float(temp['total_tvl']),
-            delta = {'reference': reference, 'relative': True},
+            delta = {'reference': reference, 'relative': False},
             domain = {'row': k, 'column': 1},
             title = dict(
                 text = index
@@ -85,7 +85,6 @@ def stablecoins_charts(data):
     fig2.update_layout(
         title = "Stablecoins supply on last day", 
         height = 700,
-        hovermode = "x unified",
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
         font = dict(color = 'white'),

@@ -1,15 +1,17 @@
-from dash import Dash, html, dcc, dash_table, callback_context
-from dash.dependencies import Input, Output
+from dash import Dash, html, dcc
+from dash.dependencies import Input, Output, State
 import flask
 
 from scripts.Transactions import *
 from scripts.Active_addresses import *
 from scripts.Blocks import *
 from scripts.GMT_hour import *
-from scripts.Main_table import *
-from scripts.NFT_mints import *
 from scripts.Prices import *
 from scripts.Stablecoins import *
+
+config = {
+    'displayModeBar': False
+}
 
 
 def read_data(name):
@@ -23,23 +25,21 @@ def read_data(name):
     
     return df
 
-data_name_array = ['data', 'price_data', 'gmt_hour_data', 'nfts_data', 'stablecoins']
+data_name_array = ['data', 'price_data', 'gmt_hour_data', 'stablecoins']
 
 for name in data_name_array:
     (globals()[name]) = read_data(str(name))
 
 #### Load data
 
-table_data, last_date = table_data(data)
-fig_txs, txs_histogram, txs_total = transactions(data)
-fig_addresses, fig_addresses_distribution = active_addresses(data)
-block_time, blocks_count = blocks(data)
+last_date = (max(data['Date(UTC)']))
+#fig_txs, txs_histogram = transactions(data)
+#fig_addresses, fig_addresses_distribution = active_addresses(data)
+#block_time, blocks_count = blocks(data)
 
-avg_tx_by_chain = transactions_by_chain_by_time(data)
+#avg_tx_by_chain = transactions_by_chain_by_time(data)
 
 fig_gmt_distribution = gmt_hour(gmt_hour_data)
-
-nft_mint = nft_mints(nfts_data)
 
 stablecoins_chart, stablecoins_stats, stablecoins_MA90_volume, stablecoins_MA90_share, stablecoins_Agg_transfers = stablecoins_charts(stablecoins)
 
@@ -65,7 +65,7 @@ app.layout = html.Div(children=[
             html.Div([
                 html.Img(src = "assets/IF.png", alt = " ", className = "if-ico"),
                 html.H1(
-                    ' EVM Blockchains Analysis (Open Beta V 0.3)', 
+                    ' EVM Blockchains Analysis (Open Beta V 0.3.2)', 
                 ),
             ],
             className = "header-title"
@@ -90,8 +90,8 @@ app.layout = html.Div(children=[
     ),
 
     html.Div( children = [
-    html.H1('Before you begin, please select the chains you wish to review:', className = "price-description"),
-    #html.P('This choice will affect all of the charts in the 1st part except the Interactive table and Distribution by GMT Hour chart', className = "price-description"),
+    html.H1('Before you begin, please select the chains you wish to review:', className = "h1-description"),
+    #html.P('This choice will affect all of the charts in the 1st part except the Interactive table and Distribution by GMT Hour chart', className = "h1-description"),
 
     dcc.Dropdown(
         [
@@ -183,77 +183,32 @@ app.layout = html.Div(children=[
     ], className = "chains-input-main"
     ),
 
-    html.H1('Total number of transactions since the launch', className = "price-description"),
-
-    dcc.Graph(
-        id='total-txs-indicators',
-        figure = txs_total
+    dcc.Tabs(id = 'category-tabs',
+        value = 'transactions',
+        children=[
+            dcc.Tab(label='📧 Transactions 📈', value='transactions'),
+            dcc.Tab(label='Addresses (WIP)', value='addresses'),
+            dcc.Tab(label='Blocks & Block time (WIP)', value='blocks'),
+        ], className = "category-input-main"
     ),
 
-    dcc.Graph(
-        id='transactions-over-time',
-        figure = fig_txs
-    ),
-
-    html.Div(children = dcc.Graph(
-        id = 'txs-avg-txs-distribution',
-        figure = avg_tx_by_chain,
-        ),
-        style={'width': '50%', 'display': 'inline-block'},
-    ),
-    html.Div(children = dcc.Graph(
-        id = 'txs-histogram',
-        figure = txs_histogram,
-        ),
-        style={'width': '50%', 'display': 'inline-block'},
-    ),
-
-    html.Div(children = dcc.Graph(
-        id = 'transactions-gmt-distribution',
-        figure = fig_gmt_distribution,
-        )
-    ),
-
-
-    html.Div(children = dcc.Graph(
-        id = 'addresses-over-time',
-        figure = fig_addresses
-        ),
-        style={'width': '65%', 'display': 'inline-block'},
-    ),
-    html.Div(children = dcc.Graph(
-        id = 'addresses-histogram',
-        figure = fig_addresses_distribution,
-        ),
-        style={'width': '35%', 'display': 'inline-block'},
-    ),
-
-    dcc.Graph(
-        id='block-time',
-        figure=block_time
-    ),
-    dcc.Graph(
-        id='blocks-count',
-        figure=blocks_count
-    ),
-    dcc.Graph(
-        id='nft-mint-count',
-        figure=nft_mint
-    ),
+    html.Div(id = 'content-render'),
 
     html.Div(children = [
-        html.H2('Stablecoins in EVM chains', className = "price-description"),
+        html.H2('Stablecoins in EVM chains', className = "h1-description"),
         html.P('In the part below we will look at stablecoins statistic on EVM chains. In order not to clutter up the charts, we chose the top-3 fiat-collateral stablecoins, namely USDC, USDT and BUSD. One algorithmic - FRAX and one crypto-collateral stablecoin - DAI.', className = "stablecoin-description"),
 
         html.Div(children = dcc.Graph(
             id = 'stablecoins-by-type',
             figure = stablecoins_chart,
+            config = config
             ),
             style={'width': '80%', 'display': 'inline-block'},
         ),
         html.Div(children = dcc.Graph(
             id = 'stablecoins-stats-today',
             figure = stablecoins_stats,
+            config = config
             ),
             style={'width': '20%', 'display': 'inline-block'},
         ),
@@ -262,6 +217,7 @@ app.layout = html.Div(children=[
         html.Div(children = dcc.Graph(
             id = 'stablecoins-90ma-transfer-volume',
             figure = stablecoins_MA90_volume,
+            config = config
             ),
             style={'width': '60%', 'display': 'inline-block'},
         ),
@@ -269,20 +225,22 @@ app.layout = html.Div(children=[
         html.Div(children = dcc.Graph(
             id = 'stablecoins-90ma-transfer-volume-share',
             figure = stablecoins_MA90_share,
+            config = config
             ),
             style={'width': '40%', 'display': 'inline-block'},
         ),
 
         dcc.Graph(
             id = 'stablecoins-aggregated-transfers',
-            figure = stablecoins_Agg_transfers
+            figure = stablecoins_Agg_transfers,
+            config = config
         ),
 
     ], className = "bridge-border"
     ),
 
-    html.H2('EVM native tokens price', className = "price-description"),
-    html.P('Select token symbol here. The chart below shows Ethereum price and price of token you selected', className = "price-description"),
+    html.H2('EVM native tokens price', className = "h1-description"),
+    html.P('Select token symbol here. The chart below shows Ethereum price and price of token you selected', className = "h1-description"),
     dcc.RadioItems(
         (price_data[price_data["TOKEN"] != "Ethereum (ETH)"])["TOKEN"].unique(),
         'Binance (BNB)',
@@ -290,7 +248,8 @@ app.layout = html.Div(children=[
         className = "price-input"
     ),
     dcc.Graph(
-        id='evm-price-plot'
+        id='evm-price-plot',
+        config = config
     ),
 
     # The END
@@ -307,44 +266,117 @@ app.layout = html.Div(children=[
     ),
 ])
 
-#callback for main checklist
+#callback for rendering by category
 @app.callback(
-    Output('transactions-over-time', 'figure'),
-    Output('txs-histogram', 'figure'),
-    Output('addresses-over-time', 'figure'),
-    Output('addresses-histogram', 'figure'),
-    Output('block-time', 'figure'),
-    Output('blocks-count', 'figure'),
-    Output('txs-avg-txs-distribution', 'figure'),
-    Output('total-txs-indicators', 'figure'),
-    Output('transactions-gmt-distribution', 'figure'),
+    Output('content-render', 'children'),
+    Input('category-tabs', 'value'),
     Input('chain-selections', 'value')
 )
-def update_output(value):
-    if value:
-        fig_txs, txs_histogram, txs_total = transactions(data.loc[data['CHAIN'].isin(value)])
+def render_content(tab, chain):
+    if tab == 'transactions':
 
-        fig_addresses, fig_addresses_distribution = active_addresses(data.loc[data['CHAIN'].isin(value)])
+        fig_txs, txs_histogram = transactions(data.loc[data['CHAIN'].isin(chain)])
 
-        block_time, blocks_count = blocks(data.loc[data['CHAIN'].isin(value)])
+        avg_tx_by_chain = transactions_by_chain_by_time(data.loc[data['CHAIN'].isin(chain)])
 
-        avg_tx_by_chain = transactions_by_chain_by_time(data.loc[data['CHAIN'].isin(value)])
+        fig_gmt_distribution = gmt_hour(gmt_hour_data.loc[gmt_hour_data['CHAIN'].isin(chain)])
 
-        fig_gmt_distribution = gmt_hour(gmt_hour_data.loc[gmt_hour_data['CHAIN'].isin(value)])
-            
-        return fig_txs, txs_histogram, fig_addresses, fig_addresses_distribution, block_time, blocks_count, avg_tx_by_chain, txs_total, fig_gmt_distribution
+        fig_indicators_sum = main_indicators(data.loc[data['CHAIN'].isin(chain)])
 
-    else:
-        fig = go.Figure()
+        return [
 
-        fig.update_layout(
-            height = 400,
-            plot_bgcolor = '#171730',
-            paper_bgcolor = '#171730',
-            font = dict(color = 'white')
-        )
+            html.H2('Total number of transactions since the launch', className = "h1-description"),
 
-        return fig, fig, fig, fig, fig, fig, fig
+            dcc.Graph(
+                id='transactions-sum-indicators',
+                figure = fig_indicators_sum, 
+                config = config
+            ),
+
+            dcc.Graph(
+                id='transactions-over-time',
+                figure = fig_txs,
+                config = config
+            ),
+
+            html.Div(children = dcc.Graph(
+                id = 'txs-avg-txs-distribution',
+                figure = avg_tx_by_chain,
+                config = config
+                ),
+                style={'width': '50%', 'display': 'inline-block'},
+            ),
+            html.Div(children = dcc.Graph(
+                id = 'txs-histogram',
+                figure = txs_histogram,
+                config = config
+                ),
+                style={'width': '50%', 'display': 'inline-block'},
+            ),
+
+            html.Div(children = dcc.Graph(
+                id = 'transactions-gmt-distribution',
+                figure = fig_gmt_distribution,
+                config = config
+                )
+            ),
+        ]
+    
+    if tab == 'addresses':
+        fig_addresses = active_addresses(data.loc[data['CHAIN'].isin(chain)])
+
+        fig_addresses_distribution = average_addresses(data.loc[data['CHAIN'].isin(chain)])
+
+        fig_trend, fig_trend_txt = trend_address(data.loc[data['CHAIN'].isin(chain)])
+
+        return [
+            dcc.Graph(
+                id = 'addresses-over-time',
+                figure = fig_addresses,
+                config = config
+            ),
+            dcc.Graph(
+                id = 'addresses-histogram',
+                figure = fig_addresses_distribution,
+                config = config
+            ),
+
+
+            html.Div(children = dcc.Graph(
+                id = 'addresses-trend-chart',
+                figure = fig_trend,
+                config = config
+                ),
+                style={'width': '80%', 'display': 'inline-block'},
+            ),
+            html.Div(children = dcc.Graph(
+                id = 'addresses-indicators-chart',
+                figure = fig_trend_txt,
+                config = config
+                ),
+                style={'width': '20%', 'display': 'inline-block'},
+            ),
+        ]
+
+    if tab == 'blocks':
+
+        block_time, blocks_count = blocks(data.loc[data['CHAIN'].isin(chain)])
+
+        return [
+            dcc.Graph(
+                id='block-time',
+                figure=block_time,
+                config = config
+            ),
+            dcc.Graph(
+                id='blocks-count',
+                figure=blocks_count,
+                config = config
+            ),
+        ]
+
+    return tab
+
 
 # callback for evm prices
 
@@ -354,6 +386,10 @@ def update_output(value):
 )
 def price_evm(value):
     return evm_prices_chart(price_data, value)
+
+
+
+
 
 if __name__ == '__main__':
     app.run_server(debug = True)

@@ -4,3 +4,4 @@ __pycache__
 .env
 csv_data
 DUNE TEST.ipynb
+test.py

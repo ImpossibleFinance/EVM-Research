@@ -13,6 +13,17 @@ body {
     border: thick double #32a1ce;
 }
 
+.category-input-main {
+    display: block;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 98%;
+    color: darkblue;
+    font-weight: bold;
+    font-family: "Verdana", sans-serif;
+}
+
 .dropdown-table-input {
     margin-bottom: 30px;
     margin-left: 50px;
@@ -112,6 +123,7 @@ body {
 
 .bridge-border {
     border: thick double #32a1ce;
+    border-radius: 10px;
 }
 
 .price-input {
@@ -121,7 +133,7 @@ body {
     font-family: "Verdana", sans-serif;
 }
 
-.price-description {
+.h1-description {
     margin-left: 50px;
     color:white;
     font-family: "Verdana", sans-serif;

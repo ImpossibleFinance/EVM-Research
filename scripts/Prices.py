@@ -25,6 +25,7 @@ def evm_prices_chart(data, token):
             x = ethereum_price['Date(UTC)'],
             y = ethereum_price['PRICE'],
             name = "Ethereum (ETH) price",
+            hovertemplate = 'Ethereum price: %{y:.2f}$<extra></extra>',
             marker_color = eth_color
         ),
         secondary_y = False,
@@ -35,6 +36,7 @@ def evm_prices_chart(data, token):
             x = second_token_price['Date(UTC)'],
             y = second_token_price['PRICE'],
             name = token + " price",
+            hovertemplate = token + ' price: %{y:.2f}$<extra></extra>',
             marker_color = token_color
         ),
         secondary_y = True,

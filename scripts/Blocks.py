@@ -1,14 +1,15 @@
 import json
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
-import numpy as np
-
-
-from scripts.Main_table import *
+from datetime import timedelta
 
 def blocks(data):
 
-    data_last_month_avg, last_date = last_month_addresses(data)
+    last_date = (max(data['Date(UTC)']))
+
+    data_last_month_avg = (data[data['Date(UTC)'].between((last_date - timedelta(days = 30)), last_date)]).groupby('CHAIN').mean()
+    data_last_month_avg['CHAIN'] = data_last_month_avg.index.get_level_values(0)
+    data_last_month_avg = data_last_month_avg.reset_index(drop=True)
 
 
     f = open('chains_config.json')

@@ -1,8 +1,9 @@
 import json
 import plotly.graph_objs as go
 import plotly.express as px
-
 from datetime import timedelta
+
+from scripts.Functions import *
 
 def txs_distribution(data):
     last_date = (max(data['Date(UTC)']))
@@ -45,13 +46,6 @@ def transactions(data):
 
     res_distribution = (txs_distribution(data))
 
-    data_sum = data.groupby('CHAIN').sum()
-    data_sum['CHAIN'] = data_sum.index.get_level_values(0)
-    data_sum['Color'] = [(list(filter(lambda x:x["chain_name"]==y,chains_config)))[0]['colors'] for y in data_sum.index]
-
-    data_sum = data_sum.reset_index(drop=True)
-
-
     res_distribution['Color'] = [(list(filter(lambda x:x["chain_name"]==y, chains_config)))[0]['colors'] for y in res_distribution['CHAIN']]
 
     res_distribution = res_distribution.drop(columns=['Day_id'])
@@ -78,7 +72,7 @@ def transactions(data):
         hovermode = "x unified",
         plot_bgcolor = '#171730',
         paper_bgcolor = '#171730',
-        font = dict(color = 'white')
+        font = dict(color = 'white'),
     )
     fig_over_time.update_xaxes(
         rangeselector=dict(
@@ -93,46 +87,21 @@ def transactions(data):
     )
     fig_over_time.update_layout(xaxis=dict(rangeselector = dict(font = dict( color = "black"))))
 
-    #Indicators
+    for i, d in enumerate(fig_over_time.data):
+        fig_over_time.add_scatter(
+            x = [d.x[-1]], 
+            y = [d.y[-1]],
+            mode = 'markers',
+            marker = dict(color = d.marker.color, size = 10),
+            legendgroup = d.name,
+            hoverinfo = 'skip',
+            name = d.name + ':<br>' + number_format(d.y[-1])
+        )
 
-    fig_total_txs = go.Figure()
-
-    columns = 0
-    rows = 0
-
-    todays_data = data[data["Date(UTC)"] == data["Date(UTC)"][max(data.index)]]
-
-    max_of_total_txs = ((data_sum.loc[data_sum['Value'].idxmax()])['Value'])
-
-    for index in data_sum['CHAIN']:
-        temp = data_sum[data_sum['CHAIN'] == index]
-        temp_today = todays_data[todays_data['CHAIN'] == index]
-        reference = float(temp['Value'])-float(temp_today['Value'])
-        
-        if columns == 4:
-            columns = 0
-            rows += 1
-
-        fig_total_txs.add_trace(go.Indicator(
-            domain = {'row': rows, 'column': columns},
-            value = float(temp['Value']),
-            mode = "gauge+number+delta",
-            title = dict(
-                text = index
-            ),
-            delta = {'reference': reference},
-
-            gauge = {'axis': {'range': [None, max_of_total_txs]}}))
-
-        columns += 1
-
-    fig_total_txs.update_layout(
-        height = 700,
-        plot_bgcolor = '#171730',
-        paper_bgcolor = '#171730',
-        font = dict(color = 'white'),
-        grid = {'rows': (rows + 1), 'columns': 4 if rows == 1 else columns, 'pattern': "independent"},
+    fig_over_time.update_layout(
+        legend_title = "Last value:",
     )
+    fig_over_time.update_xaxes(range = [min(data['Date(UTC)']), max(data['Date(UTC)'] + timedelta(days = 14))])
     #Day of week
 
     fig_by_day_of_week = px.scatter(
@@ -187,7 +156,56 @@ def transactions(data):
 
     f.close()
 
-    return fig_over_time, fig_by_day_of_week, fig_total_txs
+    return fig_over_time, fig_by_day_of_week
+
+
+def main_indicators(data):
+    #Indicators
+
+    f = open('chains_config.json')
+    chains_config = json.load(f)
+
+    data_sum = data.groupby('CHAIN').sum()
+    data_sum['CHAIN'] = data_sum.index.get_level_values(0)
+    data_sum['Color'] = [(list(filter(lambda x:x["chain_name"]==y,chains_config)))[0]['colors'] for y in data_sum.index]
+    data_sum = data_sum.sort_values(by=['Value'], ascending = False)
+    data_sum = data_sum.reset_index(drop=True)
+
+
+    fig_indicators_sum = go.Figure()
+
+    columns = 0
+    rows = 0
+
+    for index in data_sum['CHAIN']:
+        data_index = data_sum[data_sum["CHAIN"] == index]
+
+        if columns == 4:
+            columns = 0
+            rows += 1
+
+        fig_indicators_sum.add_trace(go.Indicator(
+            mode = "number",
+            value = float(data_index['Value']),
+            domain = {'row': rows, 'column': columns},
+            title = dict(
+                text = index
+            ),
+            ))
+
+        columns += 1
+
+    fig_indicators_sum.update_layout(
+        height = 400,
+        plot_bgcolor = '#171730',
+        paper_bgcolor = '#171730',
+        font = dict(color = 'white'),
+        grid = {'rows': (rows + 1), 'columns': 4 if rows == 1 else columns, 'pattern': "independent"},
+    )
+    
+    f.close()
+    
+    return fig_indicators_sum
 
 
 def transactions_by_chain_by_time(data):
@@ -212,7 +230,8 @@ def transactions_by_chain_by_time(data):
             name = 'Last ' + _columns[i][-2:],
             marker_color = _color[i],
             text = ['Last ' + _columns[i][-2:] + ' : ' + "%.2f" %(v/1e6) + 'M' for v in (globals()[_columns[i]])['Value']],
-            textposition = 'inside'
+            textposition = 'inside',
+            hovertemplate = '%{y}. %{text}<extra></extra>'
         ))
 
     fig.update_layout(
@@ -224,7 +243,6 @@ def transactions_by_chain_by_time(data):
         paper_bgcolor = '#171730',
         font = dict(color = 'white'),
         barmode='group'
-        #template = 'plotly_dark'
     )
 
     return fig
