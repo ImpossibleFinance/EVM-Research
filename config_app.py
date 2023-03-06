@@ -2,7 +2,7 @@ import pandas as pd
 import json
 
 
-from scripts.functions import *
+from scripts.Functions import *
 
 
 
@@ -21,7 +21,7 @@ stablecoins = pd.DataFrame()
 data_name_array = ['data']
 
 for name in data_name_array:
-    (globals()[name]) = read_data_from_csv('data/' + str(name) + '.csv')
+    (globals()[name]) = read_data_from_csv('data_folder/' + str(name) + '.csv')
 
 
 chains = ['Ethereum', 'Polygon', 'BNB Chain', 'Avalanche', 'Gnosis Chain', 'Optimism', 'Arbitrum', 'Fantom']

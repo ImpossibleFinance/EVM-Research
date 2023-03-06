@@ -3,7 +3,7 @@ from dash import html, Input, Output, dcc
 from datetime import timedelta
 
 
-from scripts.functions import *
+from scripts.Functions import *
 from config_app import *
 
 ###########################################################################

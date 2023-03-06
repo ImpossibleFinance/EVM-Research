@@ -3,6 +3,6 @@ pages/__pycache__
 __pycache__
 .DS_Store
 .env
-data
+data_folder
 DUNE TEST.ipynb
 test.py

@@ -1,7 +1,7 @@
 from dash import Dash, html
 import flask
 
-from scripts.functions import *
+from scripts.Functions import *
 
 ###############################################################
 ############################# App #############################
