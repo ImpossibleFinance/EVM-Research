@@ -12,10 +12,10 @@
       "dune_id": "1688067"
     },
     {
-      "api_name": "NFT mints",
-      "file_name": "-",
+      "api_name": "Gas prices",
+      "file_name": "gas_prices",
       "flipside_api": "-",
-      "dune_id": "-"
+      "dune_id": "1889528"
     },
     {
       "api_name": "EVM Prices",

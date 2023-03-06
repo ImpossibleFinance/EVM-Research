@@ -1,7 +1,8 @@
 scripts/__pycache__
+pages/__pycache__
 __pycache__
 .DS_Store
 .env
-csv_data
+data
 DUNE TEST.ipynb
 test.py

@@ -1,147 +1,142 @@
 body {
-    background-position: center; /* Center the image */
-    background-repeat: no-repeat; /* Do not repeat the image */
-    background-size: auto ; /* Resize the background image to cover the entire container */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: auto ;
     background-color: #171730;
 }
 
-.chains-input-main {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 95%;
-    border: thick double #32a1ce;
-}
-
-.category-input-main {
-    display: block;
-    margin-top: 10px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 98%;
-    color: darkblue;
-    font-weight: bold;
-    font-family: "Verdana", sans-serif;
-}
-
-.dropdown-table-input {
-    margin-bottom: 30px;
-    margin-left: 50px;
-    margin-right: 50px;
-}
-
-.main-chains-selection {
-    margin-left: 5px;
-    color: darkblue;
-    font-weight: bold;
-    font-family: "Verdana", sans-serif;
-}
-
-.aligned {
-    display: inline-flex;
-    align-items: center;
-}
-
-.header-description {
-    color:white;
-    margin: 4px auto;
-    text-align: center;
-    max-width: 600px;
-    font-weight: bold;
-    font-family: "Verdana", sans-serif;
-}
-
 .if-ico {
-    width: 25px;
+    width: 50px;
     margin-right: 7px;
-}
-
-.evm-ico {
-    width: 30px;
-    margin-right: 7px;
-    margin-left: 7px;
-}
-
-.nonevm-ico {
-    width: 35px;
-    margin-right: 7px;
-    margin-left: 7px;
-}
-
-.header-description-if {
-    color:violet;
-}
-
-.description-if-and-zb {
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-image: linear-gradient(21deg, #69b7eb, #b3dbd3, #f4d6db);
 }
 
 .header-title {
+    margin-top: 20px;
     display: flex;
     align-items: center;
     text-align: center;
     justify-content: center;
+}
+
+.impossible-description {
+    color:white;
+    font-size: 18px;
+    line-height: 1px;
+}
+
+.data-lab-description {
+    color:white;
+    font-size: 30px;
+    line-height: 1px;
+}
+
+.list-dash {
+    width: 90%;
+    position: relative;
+    left: 5%;
+    margin-top: 2%;
+    height: 12%;
+}
+
+.main-header-title {
+    display: flex;
+    justify-content: center;
+    color: white;
     font-weight: bold;
     font-family: "Verdana", sans-serif;
-
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-image: linear-gradient(30deg, #9b07f0, aqua);
+    font-size: 30px;
 }
 
 .description-main {
-    text-align: center;
-    color:white;
-    margin: 4px auto;
-    max-width: 1200px;
+    display: flex;
+    justify-content: center;
+    color: white;
+    font-size: 15px;
 }
 
-.table-output {
-    text-align: center;
-    color:white;
-    font-weight: bold;
-    font-family: "Verdana", sans-serif;
-}
-
-.table {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 95%;
-}
-
-.table-name {
-    color:white;
-    margin: 4px auto;
-    text-align: left;
-    font-weight: bold;
-    font-family: "Verdana", sans-serif;
-    margin-left: 10px;
-}
-
-.bridge-border {
-    border: thick double #32a1ce;
+.right_container {
     border-radius: 10px;
+    width: 20%;
+    height: 500px;
+    right: 2%;
+    position: absolute;
+    background-color: rgb(133, 133, 230);
 }
 
-.price-input {
-    margin-left: 100px;
-    color:white;
+.right_container h2 {
+    color: white;
+    margin-left: 5%;
+}
+
+.right_container p {
+    color: white;
+    margin-left: 5%;
+}
+
+.dropdown-table-input {
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.main-chains-selection {
+    margin-bottom: 1px;
+    margin-left: 5px;
+    color: darkblue;
     font-weight: bold;
     font-family: "Verdana", sans-serif;
+    font-size: 10px;
 }
 
-.h1-description {
-    margin-left: 50px;
-    color:white;
-    font-family: "Verdana", sans-serif;
-}
-
-.stablecoin-description {
-    margin-left: 50px;
-    color:white;
-    font-family: "Verdana", sans-serif;
+.left_container {
     width: 70%;
+    left: 5%;
+    position: absolute;
+}
+
+.card_container {
+    border-radius: 10px;
+    border: 1px solid rgb(156, 84, 224);
+    padding: 30px;
+    position: relative;
+    width: 31vw;
+}
+
+.card_container h3 {
+    font-weight: bold;
+    font-family: "Verdana", sans-serif;
+    color: white;
+    line-height: 1px;
+    margin-bottom: 30px;
+}
+
+.card_container h1 {
+    font-weight: bold;
+    font-family: "Verdana", sans-serif;
+    color: white;
+    line-height: 20px;
+}
+
+.chains_list_kpi{
+    color: white;
+    font-size: 12px;
+    margin-left: 15px;
+}
+
+.values_list_kpi{
+    color: white;
+    font-size: 12px;
+    right: 20px;
+    position: absolute;
+}
+
+.kpi_container {
+    width: 50%;
+    display: inline-block;
+}
+
+.left_container_h1 {
+    margin-top: 5%;
+    font-weight: bold;
+    font-family: "Verdana", sans-serif;
+    color: white;
 }
