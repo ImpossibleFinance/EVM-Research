@@ -5,7 +5,7 @@ from datetime import timedelta
 
 from scripts.Functions import *
 from config_app import *
-
+from scripts.distribution_by_day_of_week import *
 ###########################################################################
 ############################# Page ########################################
 ###########################################################################
@@ -49,7 +49,7 @@ layout = html.Div([
 
         dcc.Dropdown(
             options = dropdown_options,
-            value = ['Ethereum', 'BNB Chain', 'Polygon'],
+            value = ['BNB Chain', 'Polygon'],
             multi = True,
             clearable = True,
             id = 'chain-selections',
@@ -80,9 +80,18 @@ layout = html.Div([
             id = 'transactions-over-time', 
         ),
 
+        html.Div(className = "kpi_container", id = 'distribution-txs-active'),
+        html.Div(className = "kpi_container", id = 'distribution-txs-passive'),
 
-        #dcc.Graph(config = config, id = 'transactions-over-time'),
-        #dcc.Graph(config = config, id = 'transactions-distribution')
+        dcc.Graph(
+            config = config, 
+            id = 'transactions-distribution-week'
+        )#,
+
+        #dcc.Graph(
+        #    config = config, 
+        #    id = 'transactions-distribution'
+        #)
     ], className = "left_container")
 
 ])
@@ -113,3 +122,28 @@ def render_total_stats(chain):
     result_data = total_transactions_sum(data.loc[data['CHAIN'].isin(chain)])
 
     return kpi(result_data['CHAIN'], result_data['Value'], 'Total & Trend Change', 'Month-over-Month'), kpi(result_data['CHAIN'], result_data['Active addresses'], 'Active Wallets', 'Month-over-Month')
+
+@dash.callback(
+    Output('transactions-distribution-week', 'figure'),
+    Output('distribution-txs-active', 'children'),
+    Output('distribution-txs-passive', 'children'),
+    Input('date-range-selections', 'value'),
+    Input('chain-selections', 'value')
+)
+def render_transactions_day_of_week(date_range, chain):
+    current_data = (data.loc[data['CHAIN'].isin(chain)])
+    last_date = (max(current_data['Date(UTC)']))
+
+    if date_range != 'All':
+        current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
+    
+    return transactions_by_day_of_week(current_data, date_range, chains_config)
+
+@dash.callback(
+    Output('transactions-distribution', 'figure'),
+    Input('chain-selections', 'value')
+)
+def render_transactions(chain):
+    current_data = (gmt_hour_data.loc[gmt_hour_data['CHAIN'].isin(chain)])
+
+    return distribution_bars(current_data, 'GMT_HOUR', 'AVG_TXS_COUNT', 'CHAIN', chains_config, 'Distribution of EVM transactions by GMT hour', False)

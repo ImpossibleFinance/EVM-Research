@@ -1,10 +1,8 @@
 from math import log, floor
 import pandas as pd
 
-
 from dash import html
 import plotly.graph_objs as go
-import plotly.express as px
 
 kpi_style = {
     'display': 'flex', 
@@ -55,7 +53,7 @@ def kpi(chains, values, title, subtitle):
             html.Span([
                 html.Img(src = "assets/" + (chains[j]).lower() + ".png", height = 12),
                 html.Span(chains[j], className = "chains_list_kpi"),
-                html.Span(number_format(float(values[j])), className = "values_list_kpi"),
+                html.Span(number_format(float(values[j])), className = "values_list_kpi") if type(values[j]) != str else html.Span(values[j], className = "values_list_kpi"),
             ], style = kpi_style
             ),
         )
@@ -120,3 +118,44 @@ def fig_line_over_time(data, x, y, group_by, config, title, log_scale):
         fig_line.update_yaxes(type = "log")
             
     return fig_line
+
+
+
+def distribution_bars(data, x, y, group_by, config, title, log_scale):
+
+    groups = data[group_by].unique()
+
+    fig_distribution = go.Figure()
+
+    if config != False:
+        for group in groups:
+            data_group = data[data[group_by] == group]
+            fig_distribution.add_trace(go.Bar(
+                x = data_group[x], 
+                y = data_group[y],
+                name = group,
+                marker_color = ((list(filter(lambda xx:xx["chain_name"] == group, config)))[0]["colors"])
+                ))
+            
+    else:
+        for group in groups:
+            data_group = data[data[group_by] == group]
+            fig_distribution.add_trace(go.Bar(
+                x = data_group[x], 
+                y = data_group[y],
+                name = group,
+                ))
+            
+    fig_distribution.update_layout(
+        title = title, 
+        xaxis_title = x, 
+        yaxis_title = y,
+        height = 500,
+        hovermode = "x unified",
+        plot_bgcolor = '#171730',
+        paper_bgcolor = '#171730',
+        font = dict(color = 'white'),
+        showlegend = False
+    )
+
+    return fig_distribution

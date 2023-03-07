@@ -16,9 +16,7 @@ price_data = pd.DataFrame()
 gmt_hour_data = pd.DataFrame()
 stablecoins = pd.DataFrame()
 
-#data_name_array = ['data', 'price_data', 'gmt_hour_data', 'stablecoins']
-
-data_name_array = ['data']
+data_name_array = ['data', 'price_data', 'gmt_hour_data', 'stablecoins']
 
 for name in data_name_array:
     (globals()[name]) = read_data_from_csv('data_folder/' + str(name) + '.csv')
