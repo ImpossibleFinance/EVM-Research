@@ -29,12 +29,12 @@ def active_and_passive_day_of_week(data):
     return fig_active, fig_passive
 
 def transactions_by_day_of_week(data, range, config):
-    if range != 'All':
-        last_date = (max(data['Date(UTC)']))
 
+    last_date = (max(data['Date(UTC)']))
+    if range != 'All':
         last_data = (data[data['Date(UTC)'].between((last_date - timedelta(days = int(range))), last_date)])
     else:
-        last_date = data
+        last_data = data
 
     A = (last_data.groupby(by = [last_data["Date(UTC)"].dt.day_name(), last_data["CHAIN"]])['Value'].mean()).to_frame()
     A['Day of Week'] = A.index.get_level_values(0)

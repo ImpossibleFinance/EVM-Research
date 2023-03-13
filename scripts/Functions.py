@@ -8,7 +8,7 @@ kpi_style = {
     'display': 'flex', 
     'align-items': 'center', 
     'justify-content': 'left',
-    'margin-top': '10px'
+    'margin-top': '16px'
 }
 
 def number_format(number):
@@ -25,13 +25,41 @@ def read_data_from_csv(path):
     
     return df
 
-def total_transactions_sum(data):
-    data_sum = data.groupby('CHAIN').sum()
-    data_sum['CHAIN'] = data_sum.index.get_level_values(0)
-    data_sum = data_sum.sort_values(by=['Value'], ascending = False)
+def total_sum(data, value, group_by):
+    data_sum = data.groupby(group_by).sum()
+    data_sum[group_by] = data_sum.index.get_level_values(0)
+    data_sum = data_sum.sort_values(by = [value], ascending = False)
     data_sum = data_sum.reset_index(drop=True)
 
     return data_sum
+
+def average(data, value, group_by):
+
+    data_average  = data.groupby([group_by]).mean()
+    data_average[group_by] = data_average.index.get_level_values(0)
+    data_average = data_average.sort_values(by = [value], ascending = False)
+    data_average = data_average.reset_index(drop=True)
+
+    return data_average
+
+def find_ath(data, group_by, max_index, max_over_index):
+
+    groups = data[group_by].unique()
+    
+    ath = []
+    chains = []
+
+    for group in groups:
+        data_group = data[data[group_by] == group]
+
+        idmax = data_group[max_index].idxmax()
+
+        ath_stat = number_format(float(data_group[max_index][idmax])) + ' - ' + (str(data_group[max_over_index][idmax])).replace('00:00:00', '')
+        ath.append(ath_stat)
+        chains.append(group)
+
+    return kpi(chains, ath, 'ATH of Daily Active Wallets', '')
+
 
 #######################################################
 ##################  Charts  ###########################
@@ -51,7 +79,7 @@ def kpi(chains, values, title, subtitle):
     for j in range(len(chains)):
         div_output.append(
             html.Span([
-                html.Img(src = "assets/" + (chains[j]).lower() + ".png", height = 12),
+                html.Img(src = "assets/" + (chains[j]).lower() + ".png", height = 22),
                 html.Span(chains[j], className = "chains_list_kpi"),
                 html.Span(number_format(float(values[j])), className = "values_list_kpi") if type(values[j]) != str else html.Span(values[j], className = "values_list_kpi"),
             ], style = kpi_style
@@ -109,10 +137,8 @@ def fig_line_over_time(data, x, y, group_by, config, title, log_scale):
             y = [d.y[-1]],
             mode = 'markers',
             marker = dict(color = d.marker.color, size = 10),
-            #legendgroup = d.name,
             hoverinfo = 'skip',
             showlegend = False,
-            #name = d.name + ':<br>' + number_format(d.y[-1])
         )
     if log_scale == True:
         fig_line.update_yaxes(type = "log")
