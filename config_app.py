@@ -24,6 +24,8 @@ for name in data_name_array:
 
 chains = ['Ethereum', 'Polygon', 'BNB Chain', 'Avalanche', 'Gnosis Chain', 'Optimism', 'Arbitrum', 'Fantom']
 
+tokens = ['Ethereum (ETH)', 'Binance (BNB)', 'Polygon (MATIC)', 'Avalanche (AVAX)', 'Fantom (FTM)']
+
 ##############################################################################
 ########################## Page configs ######################################
 ##############################################################################
@@ -75,3 +77,13 @@ dropdown_options_date_range.append(
         "value": 'All',
     }
 )
+
+dropdown_options_tokens = [
+    {
+        "label": html.Span([
+            html.Span(token, className = "main-chains-selection"),
+        ], style = dropdown_style
+        ),
+        "value": token,
+    } for token in tokens
+]

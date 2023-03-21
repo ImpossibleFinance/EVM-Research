@@ -112,18 +112,18 @@ layout = html.Div([
             config = config, 
             id = 'active-addresses-over-time', 
         ),
-    ]),
 
-    dcc.Graph(
-        config = config, 
-        id = 'addresses-distribution',
-        style={'width': '55%', 'display': 'inline-block'}
-    ),
-    html.Div(
-        className = "kpi_container", 
-        id = 'ath-active-users',
-        style = {'width': '35%', 'display': 'inline-block'}
-    ),
+        dcc.Graph(
+            config = config, 
+            id = 'addresses-distribution',
+            style={'width': '55%', 'display': 'inline-block'}
+        ),
+        html.Div(
+            className = "kpi_container", 
+            id = 'ath-active-users',
+            style = {'width': '35%', 'display': 'inline-block'}
+        ),
+    ]),
 
     ############################## Blocks ##############################
 
@@ -133,25 +133,83 @@ layout = html.Div([
             config = config, 
             id = 'block-time-over-time', 
         ),
+
+        dcc.Graph(
+            config = config, 
+            id = 'blocks-count-over-time',
+            style={'width': '60%', 'display': 'inline-block'}
+        ),
+        html.Div(
+            className = "kpi_container", 
+            id = 'total-blocks-count',
+            style = {'width': '30%', 'display': 'inline-block'}
+        ),
     ]),
 
-    dcc.Graph(
-        config = config, 
-        id = 'blocks-count-over-time',
-        style={'width': '60%', 'display': 'inline-block'}
-    ),
-    html.Div(
-        className = "kpi_container", 
-        id = 'total-blocks-count',
-        style = {'width': '30%', 'display': 'inline-block'}
-    ),
+    ############################## Prices ##############################
+
+    html.Div([
+        html.H1([
+            html.Div([
+                html.H1('EVM Native tokens price', className = 'left_container_h1'),
+                dcc.Graph(
+                    config = config, 
+                    id = 'evm-tokens-price', 
+                ),
+            ])
+        ],className = "left"),
+                
+        html.Div([
+            html.H2('Tokens Criteria'),
+
+            html.P('Token:'),
+
+            dcc.Dropdown(
+                options = dropdown_options_tokens,
+                value = 'Binance (BNB)',
+                id = 'tokens-selections',
+                placeholder = "Select Tokens",
+                className = "dropdown-table-input"
+            ),
+
+        ], className = "right_container"),
+    ], className = "grid-container")
 ])
 
 ############################### Transactions ###############################
-#callback for rendering by category
 
 @dash.callback(
     Output('transactions-over-time', 'figure'),
+
+    Output('total-txs', 'children'),
+    Output('total-addresses', 'children'),
+
+    Input('date-range-selections', 'value'),
+    Input('chain-selections', 'value')
+)
+def render_transactions(date_range, chain):
+    if chain != []:
+        current_data = (data.loc[data['CHAIN'].isin(chain)])
+        result_data = total_sum(data.loc[data['CHAIN'].isin(chain)], 'Value', 'CHAIN')
+    else:
+        return creal_graph(), kpi([], [], 'Total & Trend Change', 'Month-over-Month'), kpi([], [], 'Active Wallets', 'Month-over-Month')
+    
+    last_date = (max(current_data['Date(UTC)']))
+
+    if date_range != 'All':
+        current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
+
+    line_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Value', 'CHAIN', chains_config, 'Overtime Transactions Breakdown', False)
+    total_txs = kpi(result_data['CHAIN'], result_data['Value'], 'Total & Trend Change', 'Month-over-Month')
+    total_addresses = kpi(result_data['CHAIN'], result_data['Active addresses'], 'Active Wallets', 'Month-over-Month')
+
+    return line_over_time, total_txs, total_addresses
+
+@dash.callback(
+    Output('transactions-distribution-week', 'figure'),
+    Output('distribution-txs-active', 'children'),
+    Output('distribution-txs-passive', 'children'),
+
     Input('date-range-selections', 'value'),
     Input('chain-selections', 'value')
 )
@@ -159,44 +217,13 @@ def render_transactions(date_range, chain):
     if chain != []:
         current_data = (data.loc[data['CHAIN'].isin(chain)])
     else:
-        return go.Figure()
-    last_date = (max(current_data['Date(UTC)']))
-
-    if date_range != 'All':
-        current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
-
-    return fig_line_over_time(current_data, 'Date(UTC)', 'Value', 'CHAIN', chains_config, 'Overtime Transactions Breakdown', False)
-
-@dash.callback(
-    Output('total-txs', 'children'),
-    Output('total-addresses', 'children'),
-    Input('chain-selections', 'value')
-)
-def render_total_stats(chain):
-    if chain != []:
-        result_data = total_sum(data.loc[data['CHAIN'].isin(chain)], 'Value', 'CHAIN')
-    else:
-        return kpi([], [], 'Total & Trend Change', 'Month-over-Month'), kpi([], [], 'Active Wallets', 'Month-over-Month')
-
-    return kpi(result_data['CHAIN'], result_data['Value'], 'Total & Trend Change', 'Month-over-Month'), kpi(result_data['CHAIN'], result_data['Active addresses'], 'Active Wallets', 'Month-over-Month')
-
-@dash.callback(
-    Output('transactions-distribution-week', 'figure'),
-    Output('distribution-txs-active', 'children'),
-    Output('distribution-txs-passive', 'children'),
-    Input('date-range-selections', 'value'),
-    Input('chain-selections', 'value')
-)
-def render_transactions_day_of_week(date_range, chain):
-    if chain != []:
-        current_data = (data.loc[data['CHAIN'].isin(chain)])
-    else:
-        return go.Figure(), kpi([], [], 'Most Active day', ''), kpi([], [], 'Most Passive day', '')
-    last_date = (max(current_data['Date(UTC)']))
-
-    if date_range != 'All':
-        current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
+        return creal_graph(), kpi([], [], 'Most Active day', ''), kpi([], [], 'Most Passive day', '')
     
+    last_date = (max(current_data['Date(UTC)']))
+
+    if date_range != 'All':
+        current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
+
     return transactions_by_day_of_week(current_data, date_range, chains_config)
 
 @dash.callback(
@@ -208,7 +235,7 @@ def render_transactions_by_gmt(chain):
     if chain != []:
         current_data = (gmt_hour_data.loc[gmt_hour_data['CHAIN'].isin(chain)])
     else:
-        return go.Figure(), kpi([], [], 'Active Time Zones', '')
+        return creal_graph(), kpi([], [], 'Active Time Zones', '')
 
     return distribution_by_gmt(current_data, chains_config)
 
@@ -226,7 +253,7 @@ def render_transactions(date_range, chain):
     if chain != []:
         current_data = (data.loc[data['CHAIN'].isin(chain)])
     else:
-        return go.Figure(), kpi([], [], 'ATH of Daily Active Wallets', ''), go.Figure()
+        return creal_graph(), kpi([], [], 'ATH of Daily Active Wallets', ''), creal_graph()
     
     last_date = (max(current_data['Date(UTC)']))
 
@@ -254,7 +281,7 @@ def render_transactions(date_range, chain):
     if chain != []:
         current_data = (data.loc[data['CHAIN'].isin(chain)])
     else:
-        return go.Figure()
+        return creal_graph(), creal_graph(), kpi([], [], 'Total Blocks made on blockchains', '')
     
     last_date = (max(current_data['Date(UTC)']))
 
@@ -268,3 +295,37 @@ def render_transactions(date_range, chain):
     total_blocks_count = kpi(arr_blocks['CHAIN'], arr_blocks['Blocks count'], 'Total Blocks made on blockchains', '')
 
     return block_time_over_time, blocks_over_time, total_blocks_count
+
+
+############################### EVM Prices ###############################
+
+@dash.callback(
+    Output('evm-tokens-price', 'figure'),
+
+    Input('date-range-selections', 'value'),
+    Input('tokens-selections', 'value')
+)
+def render_prices(date_range, token):
+    
+    tokens = [token, 'Ethereum (ETH)']
+
+    if tokens != []:
+        current_data = (price_data.loc[price_data['TOKEN'].isin(tokens)])
+    else:
+        return creal_graph()
+    
+    last_date = (max(current_data['Date(UTC)']))
+
+    if date_range != 'All':
+        current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
+
+    chart = fig_line_over_time_secondary_y(
+        current_data[current_data['TOKEN'] == 'Ethereum (ETH)'], 
+        'Date(UTC)', 
+        'PRICE', 
+        'TOKEN', 
+        current_data[current_data['TOKEN'] == token], 
+        '',
+        chains_config
+    )
+    return chart

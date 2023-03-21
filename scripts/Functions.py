@@ -1,5 +1,6 @@
 from math import log, floor
 import pandas as pd
+from plotly.subplots import make_subplots
 
 from dash import html
 import plotly.graph_objs as go
@@ -66,7 +67,19 @@ def find_ath(data, group_by, max_index, max_over_index):
 #######################################################
 
 
+def creal_graph():
+    fig = go.Figure()
 
+    fig.update_layout(
+        height = 200,
+        hovermode = "x unified",
+        plot_bgcolor = '#171730',
+        paper_bgcolor = '#171730',
+        font = dict(color = 'white'),
+        showlegend = False
+    )
+
+    return fig
 
 def kpi(chains, values, title, subtitle):
 
@@ -93,6 +106,52 @@ def kpi(chains, values, title, subtitle):
     ], className = "card_container"),
 
     return counter
+
+def fig_line_over_time_secondary_y(data, x, y, group_by, right_axis_data, title, config):
+
+    if config != False:
+        for item in config:
+            if item[group_by.lower()] == (data[group_by].unique())[0]:
+                first_color = item['colors']
+            if item[group_by.lower()] == (right_axis_data[group_by].unique())[0]:
+                second_color = item['colors']
+
+    fig = make_subplots(specs = [[{"secondary_y": True}]])
+
+    fig.add_trace(
+        go.Scatter(
+            x = data[x],
+            y = data[y],
+            showlegend = False,
+            name = (data[group_by].unique())[0],
+            marker_color = first_color
+        ),
+        secondary_y = False,
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x = right_axis_data[x],
+            y = right_axis_data[y],
+            showlegend = False,
+            name = (right_axis_data[group_by].unique())[0],
+            marker_color = second_color
+        ),
+        secondary_y = True,
+    )
+
+    fig.update_layout(
+        title = title, 
+        xaxis_title = x, 
+        yaxis_title = y,
+        height = 500,
+        hovermode = "x unified",
+        plot_bgcolor = '#171730',
+        paper_bgcolor = '#171730',
+        font = dict(color = 'white'),
+    )
+
+    return fig
 
 
 def fig_line_over_time(data, x, y, group_by, config, title, log_scale):
