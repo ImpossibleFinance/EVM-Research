@@ -2,12 +2,12 @@
     {
       "chain_name": "Ethereum",
       "token": "Ethereum (ETH)",
-      "colors": "#0ABABD"
+      "colors": "rgba(97, 109, 255, 1)"
     },
     {
         "chain_name": "BNB Chain",
         "token": "Binance (BNB)",
-        "colors": "#FFD800"
+        "colors": "rgba(240, 175, 65, 1)"
     },
     {
         "chain_name": "Avalanche",
@@ -17,7 +17,7 @@
     {
         "chain_name": "Polygon",
         "token": "Polygon (MATIC)",
-        "colors": "#0B12F3"
+        "colors": "rgba(182, 124, 255, 1)"
     },
     {
         "chain_name": "Arbitrum",
