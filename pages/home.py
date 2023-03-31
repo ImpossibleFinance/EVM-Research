@@ -48,13 +48,151 @@ layout = html.Div([
                 html.Div(className = "kpi_container", id = 'total-txs'),
                 html.Div(className = "kpi_container", id = 'total-addresses')
             ], className = "left_container"),
+
+            ############################## Transactions ##############################
+            html.H1('Transactions', className = 'left_container_h1'),
             html.Div([
-                html.H1('Transactions', className = 'left_container_h1'),
+                html.P(["Overtime Transactions Breakdown"],className = "title_small"),
                 dcc.Graph(
                     config = config, 
                     id = 'transactions-over-time', 
                 ),
-            ])
+            ], className = "single_column"),
+            html.Div([
+                html.P(["Distribution by day of week"],className = "title_small"),
+                dcc.Graph(
+                    config = config, 
+                    id = 'transactions-distribution-week'
+                ),
+                html.Div(className = "kpi_container", id = 'distribution-txs-active'),
+                html.Div(className = "kpi_container", id = 'distribution-txs-passive'),
+            ], className = "single_column"),
+
+            html.Div([
+                html.Div([
+                    html.P(["Distribution of EVM transactions by GMT hour"],className = "title_small"),
+                    dcc.Graph(
+                        config = config, 
+                        id = 'transactions-distribution',
+                        style={'width': '100%', 'display': 'inline-block'}
+                    ),
+                    ], className = "two_column big_colune"),
+                    html.Div([
+                        html.P(["Active Time Zones"],className = "title_small"),
+                        html.Div(
+                            className = "kpi_container", 
+                            id = 'distribution-time-zones',
+                            style = {'width': '100%', 'display': 'inline-block'}
+                        ),
+                    ], className = "two_column small_colune")
+            ], className = "two_column_box"),
+
+            
+
+
+            ############################## Addresses ##############################
+            html.H1('Addresses', className = 'left_container_h1'),
+            html.Div([
+                html.P(["Active Addresses Over Time"],className = "title_small"),
+                dcc.Graph(
+                    config = config, 
+                    id = 'active-addresses-over-time', 
+                ),
+            ], className = "single_column"),
+
+            html.Div([
+                html.Div([
+                    html.P(["Active Addresses Average Comparison"],className = "title_small"),
+                    dcc.Graph(
+                        config = config, 
+                        id = 'addresses-distribution',
+                        style={'width': '100%', 'display': 'inline-block'}
+                    ),
+                    ], className = "two_column big_colune"),
+                html.Div([
+                    html.P(["ATH Of Daily Active Wallets"],className = "title_small"),
+                    html.Div(
+                        className = "kpi_container", 
+                        id = 'ath-active-users',
+                        style = {'width': '100%', 'display': 'inline-block'}
+                    ),
+                    ], className = "two_column small_colune")
+            ], className = "two_column_box"),
+
+            ############################## Blocks ##############################
+            html.H1('Blocks', className = 'left_container_h1'),
+            html.Div([
+                html.P(["Block Time"],className = "title_small"),
+                        dcc.Graph(
+                    config = config, 
+                    id = 'block-time-over-time', 
+                ),
+            ], className = "single_column"),
+            html.Div([
+                html.Div([
+                    html.P(["Block Count"],className = "title_small"),
+                    dcc.Graph(
+                        config = config, 
+                        id = 'blocks-count-over-time',
+                        style={'width': '100%', 'display': 'inline-block'}
+                    ),
+                    ], className = "two_column big_colune"),
+                html.Div([
+                    html.P(["Total Blocks made on blockchains"],className = "title_small"),
+                    html.Div(
+                        className = "kpi_container", 
+                        id = 'total-blocks-count',
+                        style = {'width': '100%', 'display': 'inline-block'}
+                    ),
+                    ], className = "two_column small_colune")
+            ], className = "two_column_box"),
+
+            ############################## Prices ##############################
+            html.H1('EVM Native tokens price', className = 'left_container_h1'),
+            
+            html.Div([
+                html.P(["Exchange rates to UDS"],className = "title_small"),
+                dcc.Dropdown(
+                    options = dropdown_options_tokens,
+                    value = 'Binance (BNB)',
+                    id = 'tokens-selections',
+                    placeholder = "Select Tokens",
+                    className = "prices-dropdown-table-input"
+                ),
+                dcc.Graph(
+                    config = config, 
+                    id = 'evm-tokens-price', 
+                ),
+            ], className = "single_column"),
+
+            ############################## Template ##############################
+
+            
+
+            #----------------------- Section Title -----------------------#
+            #html.H1('Section Title', className = 'left_container_h1'),
+
+            #--------------------- Single Column -----------------------#
+            #html.Div([
+            #    html.P(["Chart title"],className = "title_small"),
+            #    html.Div(["you can put chart here."], className = "note"),
+            #], className = "single_column"),
+
+            #----------------------- Two Column -----------------------#
+            #html.Div([
+            #    html.Div([
+            #        html.P(["Chart title"],className = "title_small"),
+            #        html.Div(["you can put chart here."], className = "note"),
+            #        ], className = "two_column big_colune"),
+            #    html.Div([
+            #        html.P(["Chart title"],className = "title_small"),
+            #        html.Div(["you can put chart here."], className = "note"),
+            #        ], className = "two_column small_colune")
+            #], className = "two_column_box"),
+
+            
+
+            
         ],className = "left"),
                 
         html.Div([
@@ -85,95 +223,7 @@ layout = html.Div([
         ], className = "right_container"),
     ], className = "grid-container"),
 
-    html.Div(className = "kpi_container", id = 'distribution-txs-active'),
-    html.Div(className = "kpi_container", id = 'distribution-txs-passive'),
 
-    dcc.Graph(
-        config = config, 
-        id = 'transactions-distribution-week'
-    ),
-
-    dcc.Graph(
-        config = config, 
-        id = 'transactions-distribution',
-        style={'width': '60%', 'display': 'inline-block'}
-    ),
-    html.Div(
-        className = "kpi_container", 
-        id = 'distribution-time-zones',
-        style = {'width': '30%', 'display': 'inline-block'}
-    ),
-
-    ############################## Addresses ##############################
-
-    html.Div([
-        html.H1('Addresses', className = 'left_container_h1'),
-        dcc.Graph(
-            config = config, 
-            id = 'active-addresses-over-time', 
-        ),
-
-        dcc.Graph(
-            config = config, 
-            id = 'addresses-distribution',
-            style={'width': '55%', 'display': 'inline-block'}
-        ),
-        html.Div(
-            className = "kpi_container", 
-            id = 'ath-active-users',
-            style = {'width': '35%', 'display': 'inline-block'}
-        ),
-    ]),
-
-    ############################## Blocks ##############################
-
-    html.Div([
-        html.H1('Blocks', className = 'left_container_h1'),
-        dcc.Graph(
-            config = config, 
-            id = 'block-time-over-time', 
-        ),
-
-        dcc.Graph(
-            config = config, 
-            id = 'blocks-count-over-time',
-            style={'width': '60%', 'display': 'inline-block'}
-        ),
-        html.Div(
-            className = "kpi_container", 
-            id = 'total-blocks-count',
-            style = {'width': '30%', 'display': 'inline-block'}
-        ),
-    ]),
-
-    ############################## Prices ##############################
-
-    html.Div([
-        html.H1([
-            html.Div([
-                html.H1('EVM Native tokens price', className = 'left_container_h1'),
-                dcc.Graph(
-                    config = config, 
-                    id = 'evm-tokens-price', 
-                ),
-            ])
-        ],className = "left"),
-                
-        html.Div([
-            html.H2('Tokens Criteria'),
-
-            html.P('Token:'),
-
-            dcc.Dropdown(
-                options = dropdown_options_tokens,
-                value = 'Binance (BNB)',
-                id = 'tokens-selections',
-                placeholder = "Select Tokens",
-                className = "dropdown-table-input"
-            ),
-
-        ], className = "right_container"),
-    ], className = "grid-container")
 ])
 
 ############################### Transactions ###############################
@@ -199,7 +249,7 @@ def render_transactions(date_range, chain):
     if date_range != 'All':
         current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
 
-    line_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Value', 'CHAIN', chains_config, 'Overtime Transactions Breakdown', False)
+    line_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Value', 'CHAIN', chains_config, False)
     total_txs = kpi(result_data['CHAIN'], result_data['Value'], 'Total & Trend Change', 'Month-over-Month')
     total_addresses = kpi(result_data['CHAIN'], result_data['Active addresses'], 'Active Wallets', 'Month-over-Month')
 
@@ -253,15 +303,15 @@ def render_transactions(date_range, chain):
     if chain != []:
         current_data = (data.loc[data['CHAIN'].isin(chain)])
     else:
-        return creal_graph(), kpi([], [], 'ATH of Daily Active Wallets', ''), creal_graph()
+        return creal_graph(), kpi([], [], '', ''), creal_graph()
     
     last_date = (max(current_data['Date(UTC)']))
 
     if date_range != 'All':
         current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
 
-    active_address_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Active addresses', 'CHAIN', chains_config, 'Active Addresses over time', False)
-    ath = find_ath(current_data, 'CHAIN', 'Active addresses', 'Date(UTC)')
+    active_address_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Active addresses', 'CHAIN', chains_config, False)
+    ath = find_ath(current_data, 'CHAIN', 'Active addresses', 'Date(UTC)', '')
     active_address_distribution = active_addresses((data.loc[data['CHAIN'].isin(chain)]), current_data)
 
     return active_address_over_time, ath, active_address_distribution
@@ -281,18 +331,18 @@ def render_transactions(date_range, chain):
     if chain != []:
         current_data = (data.loc[data['CHAIN'].isin(chain)])
     else:
-        return creal_graph(), creal_graph(), kpi([], [], 'Total Blocks made on blockchains', '')
+        return creal_graph(), creal_graph(), kpi([], [], '', '')
     
     last_date = (max(current_data['Date(UTC)']))
 
     if date_range != 'All':
         current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
 
-    block_time_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Block time', 'CHAIN', chains_config, 'Block time', True)
-    blocks_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Blocks count', 'CHAIN', chains_config, 'Blocks Count', True)
+    block_time_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Block time', 'CHAIN', chains_config, True)
+    blocks_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Blocks count', 'CHAIN', chains_config, True)
     
     arr_blocks = total_sum(data.loc[data['CHAIN'].isin(chain)], 'Value', 'CHAIN')
-    total_blocks_count = kpi(arr_blocks['CHAIN'], arr_blocks['Blocks count'], 'Total Blocks made on blockchains', '')
+    total_blocks_count = kpi(arr_blocks['CHAIN'], arr_blocks['Blocks count'], '', '')
 
     return block_time_over_time, blocks_over_time, total_blocks_count
 
@@ -310,7 +360,7 @@ def render_prices(date_range, token):
     tokens = [token, 'Ethereum (ETH)']
 
     if tokens != []:
-        current_data = (price_data.loc[price_data['TOKEN'].isin(tokens)])
+        current_data = (Prices.loc[Prices['TOKEN'].isin(tokens)])
     else:
         return creal_graph()
     
@@ -325,7 +375,6 @@ def render_prices(date_range, token):
         'PRICE', 
         'TOKEN', 
         current_data[current_data['TOKEN'] == token], 
-        '',
         chains_config
     )
     return chart

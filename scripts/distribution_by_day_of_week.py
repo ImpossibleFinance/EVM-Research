@@ -60,6 +60,6 @@ def transactions_by_day_of_week(data, range, config):
 
     fig_active, fig_passive = active_and_passive_day_of_week(A)
 
-    fig_by_day_of_week = distribution_bars(A, 'Day of Week', 'Value', 'CHAIN', config, 'Distribution by day of week', False)
+    fig_by_day_of_week = distribution_bars(A, 'Day of Week', 'Value', 'CHAIN', config)
 
     return fig_by_day_of_week, fig_active, fig_passive

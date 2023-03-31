@@ -3,7 +3,7 @@ import plotly.graph_objs as go
 
 from scripts.Functions import *
 
-def distribution_bars_horizontal_addresses(data, current_data, x, y, title, last_date, first_date):
+def distribution_bars_horizontal_addresses(data, current_data, x, y, last_date, first_date):
 
     fig_distribution = go.Figure()
 
@@ -30,7 +30,6 @@ def distribution_bars_horizontal_addresses(data, current_data, x, y, title, last
     ))
             
     fig_distribution.update_layout(
-        title = title, 
         xaxis_title = x, 
         yaxis_title = y,
         height = 500,
@@ -57,6 +56,6 @@ def active_addresses(data, current_data):
 
     first_date = (min(current_data['Date(UTC)']))
 
-    fig_data = distribution_bars_horizontal_addresses(last_month_data_avg, last_month_current_data_avg, 'Active addresses', 'CHAIN', 'Active addresses average comparison', last_date, first_date)
+    fig_data = distribution_bars_horizontal_addresses(last_month_data_avg, last_month_current_data_avg, 'Active addresses', 'CHAIN', last_date, first_date)
 
     return fig_data

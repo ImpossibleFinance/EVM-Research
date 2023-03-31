@@ -12,19 +12,18 @@ from scripts.Functions import *
 
 
 data = pd.DataFrame()
-price_data = pd.DataFrame()
+Prices = pd.DataFrame()
 gmt_hour_data = pd.DataFrame()
 stablecoins = pd.DataFrame()
 
-data_name_array = ['data', 'price_data', 'gmt_hour_data', 'stablecoins']
+data_name_array = ['data', 'Prices', 'gmt_hour_data', 'stablecoins']
 
 for name in data_name_array:
-    (globals()[name]) = read_data_from_csv('data_folder/' + str(name) + '.csv')
-
+    (globals()[name]) = read_data_from_csv('data/' + str(name) + '.csv')
 
 chains = ['Ethereum', 'Polygon', 'BNB Chain', 'Avalanche', 'Gnosis Chain', 'Optimism', 'Arbitrum', 'Fantom']
 
-tokens = ['Ethereum (ETH)', 'Binance (BNB)', 'Polygon (MATIC)', 'Avalanche (AVAX)', 'Fantom (FTM)']
+tokens = ['Ethereum (ETH)', 'Binance (BNB)', 'Polygon (MATIC)', 'Avalanche (AVAX)', 'Fantom (FTM)', 'Optimism (OP)', 'Arbitrum (ARB)']
 
 ##############################################################################
 ########################## Page configs ######################################

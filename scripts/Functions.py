@@ -9,7 +9,7 @@ kpi_style = {
     'display': 'flex', 
     'align-items': 'center', 
     'justify-content': 'left',
-    'margin-top': '16px'
+    'margin-top': '10px'
 }
 
 def number_format(number):
@@ -43,7 +43,7 @@ def average(data, value, group_by):
 
     return data_average
 
-def find_ath(data, group_by, max_index, max_over_index):
+def find_ath(data, group_by, max_index, max_over_index, title):
 
     groups = data[group_by].unique()
     
@@ -59,7 +59,7 @@ def find_ath(data, group_by, max_index, max_over_index):
         ath.append(ath_stat)
         chains.append(group)
 
-    return kpi(chains, ath, 'ATH of Daily Active Wallets', '')
+    return kpi(chains, ath, title, '')
 
 
 #######################################################
@@ -107,7 +107,7 @@ def kpi(chains, values, title, subtitle):
 
     return counter
 
-def fig_line_over_time_secondary_y(data, x, y, group_by, right_axis_data, title, config):
+def fig_line_over_time_secondary_y(data, x, y, group_by, right_axis_data, config):
 
     if config != False:
         for item in config:
@@ -141,7 +141,6 @@ def fig_line_over_time_secondary_y(data, x, y, group_by, right_axis_data, title,
     )
 
     fig.update_layout(
-        title = title, 
         xaxis_title = x, 
         yaxis_title = y,
         height = 500,
@@ -154,7 +153,7 @@ def fig_line_over_time_secondary_y(data, x, y, group_by, right_axis_data, title,
     return fig
 
 
-def fig_line_over_time(data, x, y, group_by, config, title, log_scale):
+def fig_line_over_time(data, x, y, group_by, config, log_scale):
     fig_line = go.Figure()
 
     groups = data[group_by].unique()
@@ -180,7 +179,6 @@ def fig_line_over_time(data, x, y, group_by, config, title, log_scale):
                 ))
             
     fig_line.update_layout(
-        title = title, 
         xaxis_title = x, 
         yaxis_title = y,
         height = 500,
@@ -206,7 +204,7 @@ def fig_line_over_time(data, x, y, group_by, config, title, log_scale):
 
 
 
-def distribution_bars(data, x, y, group_by, config, title, log_scale):
+def distribution_bars(data, x, y, group_by, config):
 
     groups = data[group_by].unique()
 
@@ -232,7 +230,6 @@ def distribution_bars(data, x, y, group_by, config, title, log_scale):
                 ))
             
     fig_distribution.update_layout(
-        title = title, 
         xaxis_title = x, 
         yaxis_title = y,
         height = 500,

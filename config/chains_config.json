@@ -2,41 +2,49 @@
     {
       "chain_name": "Ethereum",
       "token": "Ethereum (ETH)",
-      "colors": "#0ABABD"
+      "colors": "rgba(97, 109, 255, 1)",
+      "coingecko_tag": "ethereum"
     },
     {
         "chain_name": "BNB Chain",
         "token": "Binance (BNB)",
-        "colors": "#FFD800"
+        "colors": "rgba(240, 175, 65, 1)",
+        "coingecko_tag": "binancecoin"
     },
     {
         "chain_name": "Avalanche",
         "token": "Avalanche (AVAX)",
-        "colors": "#F3190B"
+        "colors": "#F3190B",
+        "coingecko_tag": "avalanche-2"
     },
     {
         "chain_name": "Polygon",
         "token": "Polygon (MATIC)",
-        "colors": "#0B12F3"
+        "colors": "rgba(182, 124, 255, 1)",
+        "coingecko_tag": "matic-network"
     },
     {
         "chain_name": "Arbitrum",
-        "token": "-",
-        "colors": "#5A81FC"
+        "token": "Arbitrum (ARB)",
+        "colors": "#5A81FC",
+        "coingecko_tag": "arbitrum"
     },
     {
         "chain_name": "Optimism",
-        "token": "-",
-        "colors": "#FE7171"
+        "token": "Optimism (OP)",
+        "colors": "#FE7171",
+        "coingecko_tag": "optimism"
     },
     {
         "chain_name": "Gnosis Chain",
         "token": "-",
-        "colors": "#A09D9D"
+        "colors": "#A09D9D",
+        "coingecko_tag": "-"
     },
     {
         "chain_name": "Fantom",
         "token": "Fantom (FTM)",
-        "colors": "#2B9BDF"
+        "colors": "#2B9BDF",
+        "coingecko_tag": "fantom"
     }
 ]

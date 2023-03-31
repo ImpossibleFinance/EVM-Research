@@ -73,7 +73,7 @@ def distribution_by_gmt(current_data, chains_config):
 
     gmt_time_zones = data_gmt()
 
-    fig_distribution = distribution_bars(current_data, 'GMT_HOUR', 'AVG_TXS_COUNT', 'CHAIN', chains_config, 'Distribution of EVM transactions by GMT hour', False)
+    fig_distribution = distribution_bars(current_data, 'GMT_HOUR', 'AVG_TXS_COUNT', 'CHAIN', chains_config)
 
     gmt_hours, chains = active_gmt_hour(current_data)
 
@@ -82,4 +82,4 @@ def distribution_by_gmt(current_data, chains_config):
             if hour >= int((item['hours']).split("-")[0]) and hour <= int((item['hours']).split("-")[1]):
                 category_arr.append(item['zone'])
 
-    return fig_distribution, kpi(chains, category_arr, 'Active Time Zones', '')
+    return fig_distribution, kpi(chains, category_arr, '', '')
