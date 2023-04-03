@@ -30,9 +30,10 @@ def get_price(token):
 
     return data
 
-def upload_prices():
+def upload_prices(): #### <===
     f = open('config/chains_config.json')
     token_contracts = json.load(f)
+    f.close()
 
     k = 0
     for item in token_contracts:
@@ -63,4 +64,97 @@ def upload_prices():
 
         k += 1
 
-upload_prices()
+def data_by_url(internal_url):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "en-US,en;q=0.5",
+    }
+
+
+    url = 'https://node-api.flipsidecrypto.com/api/v2/queries/' + internal_url
+    r = requests.get(url, headers=headers).text
+    json_object = json.loads(r)
+    df = pd.DataFrame.from_dict(json_object)
+
+    if 'Date(UTC)' in df:
+        df['Date(UTC)'] = pd.to_datetime(df["Date(UTC)"])
+
+    return df
+
+def upload_data(): ## <====
+
+    f = open('config/requests_config.json')
+    requests_config = json.load(f)
+    f.close()
+
+    for item in requests_config:
+        if item['api_name'] == 'Main info':
+            url = str(item['flipside_api'])
+
+    df = data_by_url(url)
+    df = df.rename(columns = {"DATE": "Date(UTC)", "VALUE": "Value", "ADDRESSES": "Active addresses", "BLOCK_TIME": "Block time", "BLOCKS_COUNT": "Blocks count"})
+    df = df.sort_values(by=['Date(UTC)'])
+    df = df.reset_index(drop = True)
+
+    df['Date(UTC)'] = (df['Date(UTC)'].str).replace(' 00:00:00.000','T00:00:00Z')
+    first_date = (min(df['Date(UTC)']))
+    name = 'data'
+
+    print(df)
+
+    try:
+        if 'Date(UTC)' in df:
+            data_from_file = pd.read_csv('data/' + str(name) + '.csv')
+
+            #first_date = (min(df['Date(UTC)']))
+
+            result = pd.concat([data_from_file[data_from_file["Date(UTC)"] < first_date], df[df["Date(UTC)"] >= first_date]], ignore_index = True)
+            result.to_csv('data/' + str(name) + '.csv', index = False)
+
+            print("Rewriting CSV with new dates " + name)
+
+        else:
+            df.to_csv('data/' + str(name) + '.csv', index = False)
+            print("Rewriting whole CSV: " + name)
+    except:
+        df.to_csv('data/' + str(name) + '.csv', index = False)
+        print("Writing new CSV: " + name)
+
+
+
+def upload_gmt_data(): ## <====
+
+    f = open('config/requests_config.json')
+    requests_config = json.load(f)
+    f.close()
+
+    for item in requests_config:
+        if item['api_name'] == 'GMT Hour':
+            url = str(item['flipside_api'])
+
+    df = data_by_url(url)
+    df = df.sort_values(by=['RANGE'])
+    df = df.reset_index(drop = True)
+
+    print(df)
+    
+    df.to_csv('data/gmt_hour_data.csv', index = False)
+    
+
+def upload_wallets_count(): ## <====
+
+    f = open('config/requests_config.json')
+    requests_config = json.load(f)
+    f.close()
+
+    for item in requests_config:
+        if item['api_name'] == 'Total Wallets':
+            url = str(item['flipside_api'])
+
+    df = data_by_url(url)
+
+    print(df)
+    
+    df.to_csv('data/wallets.csv', index = False)

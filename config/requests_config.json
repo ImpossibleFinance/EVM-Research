@@ -2,7 +2,7 @@
     {
       "api_name": "Main info",
       "file_name": "data",
-      "flipside_api": "-",
+      "flipside_api": "4c6a9c41-314a-4bd6-9cd5-82ccd30facbb/data/latest",
       "dune_id": "1687415"
     },
     {
@@ -12,10 +12,10 @@
       "dune_id": "1688067"
     },
     {
-      "api_name": "Gas prices",
-      "file_name": "gas_prices",
-      "flipside_api": "-",
-      "dune_id": "1889528"
+      "api_name": "Total Wallets",
+      "file_name": "wallets",
+      "flipside_api": "6800840c-39b1-4dc8-a08e-b6ccf143250f/data/latest",
+      "dune_id": "-"
     },
     {
       "api_name": "EVM Prices",

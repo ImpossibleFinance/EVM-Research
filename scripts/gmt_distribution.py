@@ -60,9 +60,9 @@ def active_gmt_hour(data):
     for group in groups:
         data_group = data[data['CHAIN'] == group]
 
-        idmax = data_group['AVG_TXS_COUNT'].idxmax()
+        idmax = data_group['Avg # of transactions'].idxmax()
 
-        active_gmt.append(data_group['GMT_HOUR'][idmax])
+        active_gmt.append(data_group['GMT hour'][idmax])
         chains.append(group)
 
     return active_gmt, chains
@@ -73,7 +73,7 @@ def distribution_by_gmt(current_data, chains_config):
 
     gmt_time_zones = data_gmt()
 
-    fig_distribution = distribution_bars(current_data, 'GMT_HOUR', 'AVG_TXS_COUNT', 'CHAIN', chains_config)
+    fig_distribution = distribution_bars(current_data, 'GMT hour', 'Avg # of transactions', 'CHAIN', chains_config)
 
     gmt_hours, chains = active_gmt_hour(current_data)
 

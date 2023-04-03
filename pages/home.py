@@ -240,6 +240,7 @@ layout = html.Div([
 def render_transactions(date_range, chain):
     if chain != []:
         current_data = (data.loc[data['CHAIN'].isin(chain)])
+        wallets_current = (wallets.loc[wallets['CHAIN'].isin(chain)])
         result_data = total_sum(data.loc[data['CHAIN'].isin(chain)], 'Value', 'CHAIN')
     else:
         return creal_graph(), kpi([], [], 'Total & Trend Change', 'Month-over-Month'), kpi([], [], 'Active Wallets', 'Month-over-Month')
@@ -249,9 +250,11 @@ def render_transactions(date_range, chain):
     if date_range != 'All':
         current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
 
+    wallets_current = wallets_current.reset_index(drop=True)
+
     line_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Value', 'CHAIN', chains_config, False)
     total_txs = kpi(result_data['CHAIN'], result_data['Value'], 'Total & Trend Change', 'Month-over-Month')
-    total_addresses = kpi(result_data['CHAIN'], result_data['Active addresses'], 'Active Wallets', 'Month-over-Month')
+    total_addresses = kpi(wallets_current['CHAIN'], wallets_current['TOTAL_NEW'], 'Total Active Wallets', 'Month-over-Month')
 
     return line_over_time, total_txs, total_addresses
 
@@ -279,13 +282,18 @@ def render_transactions(date_range, chain):
 @dash.callback(
     Output('transactions-distribution', 'figure'),
     Output('distribution-time-zones', 'children'),
+
+    Input('date-range-selections', 'value'),
     Input('chain-selections', 'value')
 )
-def render_transactions_by_gmt(chain):
+def render_transactions_by_gmt(date_range, chain):
     if chain != []:
         current_data = (gmt_hour_data.loc[gmt_hour_data['CHAIN'].isin(chain)])
     else:
         return creal_graph(), kpi([], [], 'Active Time Zones', '')
+
+    if date_range != 'All':
+        current_data = (current_data[current_data['RANGE'] == int(date_range)])
 
     return distribution_by_gmt(current_data, chains_config)
 
@@ -368,6 +376,9 @@ def render_prices(date_range, token):
 
     if date_range != 'All':
         current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
+
+    current_data = current_data.sort_values(by=['Date(UTC)'])
+    current_data = current_data.reset_index(drop = True)
 
     chart = fig_line_over_time_secondary_y(
         current_data[current_data['TOKEN'] == 'Ethereum (ETH)'], 
