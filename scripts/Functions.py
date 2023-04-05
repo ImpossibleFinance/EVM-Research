@@ -1,6 +1,8 @@
 from math import log, floor
 import pandas as pd
 from plotly.subplots import make_subplots
+import json
+import os
 
 from dash import html
 import plotly.graph_objs as go
@@ -24,7 +26,18 @@ def read_data_from_csv(path):
     if 'Date(UTC)' in df:
         df['Date(UTC)'] = pd.to_datetime(pd.to_datetime(df['Date(UTC)']).dt.strftime('%Y-%m-%d'))
     
+    if 'hash' in df:
+        df['hash'] = df['hash'].str.lower()
+
+    if 'from' in df:
+        df['from'] = df['from'].str.lower()
+
+    if 'to' in df:
+        df['to'] = df['to'].str.lower()
+    
+
     return df
+
 
 def total_sum(data, value, group_by):
     data_sum = data.groupby(group_by).sum()
@@ -62,11 +75,6 @@ def find_ath(data, group_by, max_index, max_over_index, title):
     return kpi(chains, ath, title, '')
 
 
-#######################################################
-##################  Charts  ###########################
-#######################################################
-
-
 def creal_graph():
     fig = go.Figure()
 
@@ -80,6 +88,23 @@ def creal_graph():
     )
 
     return fig
+
+def kpi_single(value, title, subtitle):
+
+    div_output = (
+        html.Span([
+            html.H3(number_format(float(value)), className = "values_single_kpi") if type(value) != str else html.Span(value, className = "values_single_kpi"),
+        ], style = kpi_style
+        ),
+    )
+
+    counter = html.Div([
+        html.H1(children = title),
+        html.H3(children = subtitle),
+        html.Div(children = div_output)
+    ], className = "card_container"),
+
+    return counter
 
 def kpi(chains, values, title, subtitle):
 
@@ -204,7 +229,7 @@ def fig_line_over_time(data, x, y, group_by, config, log_scale):
 
 
 
-def distribution_bars(data, x, y, group_by, config):
+def distribution_bars(data, x, y, group_by, config, stack):
 
     groups = data[group_by].unique()
 
@@ -240,4 +265,38 @@ def distribution_bars(data, x, y, group_by, config):
         showlegend = False
     )
 
+    if stack == 'stack':
+        fig_distribution.update_layout(barmode='stack')
+
     return fig_distribution
+
+def pie_distribution(data, x, y, formated):
+
+    fig_pie = go.Figure(data=[
+        go.Pie(
+            labels = data[x], 
+            values = data[y],
+            text = data[y],
+            textinfo = 'label',
+            textfont = dict(size = 13),
+            hole = 0.7,
+            hovertemplate = '%' + formated + '<extra></extra>',
+            rotation = 90)
+        ])
+    
+    fig_pie.update_layout(
+        height = 600,
+        plot_bgcolor = '#171730',
+        paper_bgcolor = '#171730',
+        font = dict(color = 'white'),
+        hovermode = 'closest',
+        legend = {
+            'orientation': 'h',
+            'xanchor': 'center',
+            'yanchor': 'top',
+            'x': 0.5,
+            'y': 1.25
+        }
+    )
+
+    return fig_pie

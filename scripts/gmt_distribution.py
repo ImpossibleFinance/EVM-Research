@@ -73,7 +73,7 @@ def distribution_by_gmt(current_data, chains_config):
 
     gmt_time_zones = data_gmt()
 
-    fig_distribution = distribution_bars(current_data, 'GMT hour', 'Avg # of transactions', 'CHAIN', chains_config)
+    fig_distribution = distribution_bars(current_data, 'GMT hour', 'Avg # of transactions', 'CHAIN', chains_config, False)
 
     gmt_hours, chains = active_gmt_hour(current_data)
 
