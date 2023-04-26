@@ -15,18 +15,6 @@
       "api_name": "Total Wallets",
       "file_name": "wallets",
       "flipside_api": "6800840c-39b1-4dc8-a08e-b6ccf143250f/data/latest",
-      "dune_id": "-"
-    },
-    {
-      "api_name": "EVM Prices",
-      "file_name": "price_data",
-      "flipside_api": "-",
-      "dune_id": "1884835"
-    },
-    {
-      "api_name": "Stablecoins",
-      "file_name": "stablecoins",
-      "flipside_api": "-",
-      "dune_id": "1862391"
+      "dune_id": "2414009"
     }
 ]

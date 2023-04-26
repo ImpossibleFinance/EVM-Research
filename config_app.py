@@ -14,10 +14,9 @@ from scripts.Functions import *
 data = pd.DataFrame()
 Prices = pd.DataFrame()
 gmt_hour_data = pd.DataFrame()
-stablecoins = pd.DataFrame()
 wallets = pd.DataFrame()
 
-data_name_array = ['data', 'Prices', 'wallets', 'gmt_hour_data', 'stablecoins']
+data_name_array = ['data', 'Prices', 'wallets', 'gmt_hour_data']
 
 for name in data_name_array:
     (globals()[name]) = read_data_from_csv('data/' + str(name) + '.csv')
