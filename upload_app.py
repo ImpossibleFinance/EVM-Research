@@ -174,4 +174,5 @@ upload = Upload()
 
 
 upload.upload_prices()
-upload.upload_data()
+for datas in ['data', 'gmt', 'wallets']:
+    upload.upload_data(datas)
