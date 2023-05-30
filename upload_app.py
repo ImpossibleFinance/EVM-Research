@@ -5,6 +5,7 @@ import requests
 import pandas as pd
 import time
 import datetime
+import sys
 
 from dune_client.types import QueryParameter
 from dune_client.client import DuneClient
@@ -12,7 +13,7 @@ from dune_client.query import Query
 
 
 class Upload():
-    def __init__(self):
+    def __init__(self, num_of_days):
 
         load_dotenv()
         self.API_KEY_DUNE = os.getenv('DUNE_API_KEY')
@@ -27,7 +28,7 @@ class Upload():
 
 
         self.end_date = datetime.datetime.today().strftime('%Y-%m-%d') + ' 00:00:00'
-        self.start_date = (datetime.datetime.today() - datetime.timedelta(14)).strftime('%Y-%m-%d') + ' 00:00:00'
+        self.start_date = (datetime.datetime.today() - datetime.timedelta(int(num_of_days))).strftime('%Y-%m-%d') + ' 00:00:00'
 
     def get_price(self, token):
         url = 'https://api.coingecko.com/api/v3/coins/'+ token +'/market_chart'
@@ -170,7 +171,11 @@ class Upload():
                 self.data_by_url(url, item['file_name'])
 
 
-upload = Upload()
+num_of_days = int(sys.argv[1])
+
+print("Number of days: ", num_of_days)
+
+upload = Upload(num_of_days)
 
 
 upload.upload_prices()
