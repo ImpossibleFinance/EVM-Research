@@ -6,6 +6,7 @@ import pandas as pd
 import time
 import datetime
 import sys
+from tqdm import tqdm
 
 from dune_client.types import QueryParameter
 from dune_client.client import DuneClient
@@ -39,7 +40,7 @@ class Upload():
         }
 
         response = requests.get(url, params=params)
-        print(token)
+        #print(token)
         data = response.json()
         data = pd.DataFrame(data['prices'], columns=['Uni_time', 'PRICE'])
 
@@ -57,10 +58,15 @@ class Upload():
     
     def upload_prices(self): #### <=== Data #1
 
-        k = 0
-        for item in self.token_contracts:
+        #k = 0
 
-            print(str(k) + '/' + str(len(self.token_contracts)))
+        print("-"*80)
+        print("Prices are uploading:")
+        print("-"*80)
+
+        for item in tqdm(self.token_contracts):
+
+            #print(str(k) + '/' + str(len(self.token_contracts)))
 
             token = str(item['coingecko_tag'])
 
@@ -84,7 +90,7 @@ class Upload():
                 time.sleep(0.5)
 
 
-            k += 1
+            #k += 1
 
 
     def convert_Dune_to_DF(self, results):
@@ -160,13 +166,30 @@ class Upload():
     def upload_data(self, name):
         for item in self.requests_config:
             if item['api_name'] == 'Main info' and name == 'data':
+
+                print("-"*80)
+                print("Main data is uploading")
+                print("-"*80)
+
+
                 url = str(item['dune_id'])
                 self.data_by_url(url, item['file_name'])
             elif item['api_name'] == 'GMT Hour' and name == 'gmt':
+
+                print("-"*80)
+                print("GMT Hour is uploading")
+                print("-"*80)
+
                 url = str(item['dune_id'])
                 self.data_by_url(url, item['file_name'])
 
             elif item['api_name'] == 'Total Wallets' and name == 'wallets':
+
+                print("-"*80)
+                print("Wallets is uploading")
+                print("-"*80)
+
+
                 url = str(item['dune_id'])
                 self.data_by_url(url, item['file_name'])
 
