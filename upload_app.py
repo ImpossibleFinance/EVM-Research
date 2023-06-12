@@ -19,11 +19,13 @@ class Upload():
         load_dotenv()
         self.API_KEY_DUNE = os.getenv('DUNE_API_KEY')
 
-        f = open('config/chains_config.json')
+        #f = open('config/chains_config.json')
+        f = open(os.path.abspath('config/chains_config.json'))
         self.token_contracts = json.load(f)
         f.close()
 
-        f2 = open('config/requests_config.json')
+        #f2 = open('config/requests_config.json')
+        f2 = open(os.path.abspath('config/requests_config.json'))
         self.requests_config = json.load(f2)
         f2.close()
 
@@ -33,6 +35,7 @@ class Upload():
 
     def get_price(self, token):
         url = 'https://api.coingecko.com/api/v3/coins/'+ token +'/market_chart'
+
         params = {
             'vs_currency': 'usd',
             'days': 'max',
@@ -58,19 +61,15 @@ class Upload():
     
     def upload_prices(self): #### <=== Data #1
 
-        #k = 0
-
         print("-"*80)
         print("Prices are uploading:")
         print("-"*80)
 
         for item in tqdm(self.token_contracts):
 
-            #print(str(k) + '/' + str(len(self.token_contracts)))
-
             token = str(item['coingecko_tag'])
 
-            file_path = 'data/Prices.csv'
+            file_path = os.path.abspath('data/Prices.csv') #'data/Prices.csv'
 
             if os.stat(file_path).st_size == 0 or os.stat(file_path).st_size == 1:
                 csv_data = pd.DataFrame()
@@ -85,12 +84,9 @@ class Upload():
                 price_data['TOKEN'] = str(item['token'])
                 data = pd.concat([csv_data, price_data])
 
-                data.to_csv('data/Prices.csv', index = False)
+                data.to_csv(file_path, index = False)
 
                 time.sleep(0.5)
-
-
-            #k += 1
 
 
     def convert_Dune_to_DF(self, results):
@@ -111,7 +107,7 @@ class Upload():
         print(df)
         return df
 
-    def data_by_url(self, internal_url, name):
+    def data_by_url(self, internal_url, name): #### <=== Data #2-4
 
         if name == 'data':
             data_params = [    
@@ -136,6 +132,8 @@ class Upload():
 
         df = self.convert_Dune_to_DF(results)
 
+        file_path = os.path.abspath('data') + '/'
+
         if name == 'data':
             df['DATE'] = (df['DATE'].str).replace(' 00:00:00.000 UTC','T00:00:00Z')
             df = df.rename(columns = {"DATE": "Date(UTC)", "VALUE": "Value", "ADDRESSES": "Active addresses", "BLOCK_TIME": "Block time", "BLOCKS_COUNT": "Blocks count"})
@@ -147,21 +145,21 @@ class Upload():
 
             try:
                 if 'Date(UTC)' in df:
-                    data_from_file = pd.read_csv('data/' + str(name) + '.csv')
+                    data_from_file = pd.read_csv(file_path + str(name) + '.csv')
 
                     result = pd.concat([data_from_file[data_from_file["Date(UTC)"] < first_date], df[df["Date(UTC)"] >= first_date]], ignore_index = True)
-                    result.to_csv('data/' + str(name) + '.csv', index = False)
+                    result.to_csv(file_path + str(name) + '.csv', index = False)
 
                     print("Rewriting CSV with new dates " + name)
 
                 else:
-                    df.to_csv('data/' + str(name) + '.csv', index = False)
+                    df.to_csv(file_path + str(name) + '.csv', index = False)
                     print("Rewriting whole CSV: " + name)
             except:
-                df.to_csv('data/' + str(name) + '.csv', index = False)
+                df.to_csv(file_path + str(name) + '.csv', index = False)
                 print("Writing new CSV: " + name)
         else:
-            df.to_csv('data/' + str(name) + '.csv', index = False)
+            df.to_csv(file_path + str(name) + '.csv', index = False)
 
     def upload_data(self, name):
         for item in self.requests_config:
@@ -200,7 +198,9 @@ print("Number of days: ", num_of_days)
 
 upload = Upload(num_of_days)
 
-
 upload.upload_prices()
-for datas in ['data', 'gmt', 'wallets']:
+
+datas_array = ['data', 'gmt', 'wallets']
+
+for datas in datas_array:
     upload.upload_data(datas)
