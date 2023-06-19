@@ -43,7 +43,7 @@ class Upload():
         }
 
         response = requests.get(url, params=params)
-        #print(token)
+
         data = response.json()
         data = pd.DataFrame(data['prices'], columns=['Uni_time', 'PRICE'])
 
@@ -124,7 +124,7 @@ class Upload():
             params = data_params
         )
 
-        print("Results available at", query.url())
+        #print("Results available at", query.url())
 
         dune = DuneClient(self.API_KEY_DUNE)
         results = dune.refresh(query)
