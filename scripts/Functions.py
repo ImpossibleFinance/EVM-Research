@@ -3,6 +3,9 @@ import pandas as pd
 from plotly.subplots import make_subplots
 import json
 import os
+import numpy as np
+import pathlib
+
 
 from dash import html
 import plotly.graph_objs as go
@@ -15,27 +18,28 @@ kpi_style = {
 }
 
 def number_format(number):
-    units = ['', 'K', 'M', 'B', 'T', 'P']
-    k = 1000.0
-    magnitude = int(floor(log(number, k)))
-    return '%.2f%s' % (number / k**magnitude, units[magnitude])
+    if abs(float(number)) > 1:
+        units = ['', 'K', 'M', 'B', 'T', 'P']
+        k = 1000.0
+        magnitude = int(floor(log(number, k)))
+        return '%.2f%s' % (number / k**magnitude, units[magnitude])
+    else:
+        dist = int(('%e' %number).partition('-')[2]) - 1
+        format = '%.' + str(dist + 2) + 'f'
+        return format %number
 
 def read_data_from_csv(path):
     df = pd.read_csv(path)
 
+    lower_columns = ['hash', 'from', 'to']
+
     if 'Date(UTC)' in df:
         df['Date(UTC)'] = pd.to_datetime(pd.to_datetime(df['Date(UTC)']).dt.strftime('%Y-%m-%d'))
+
+    for low in lower_columns:
+        if low in df:
+            df[low] = df[low].str.lower()
     
-    if 'hash' in df:
-        df['hash'] = df['hash'].str.lower()
-
-    if 'from' in df:
-        df['from'] = df['from'].str.lower()
-
-    if 'to' in df:
-        df['to'] = df['to'].str.lower()
-    
-
     return df
 
 
@@ -68,11 +72,17 @@ def find_ath(data, group_by, max_index, max_over_index, title):
 
         idmax = data_group[max_index].idxmax()
 
-        ath_stat = number_format(float(data_group[max_index][idmax])) + ' - ' + (str(data_group[max_over_index][idmax])).replace('00:00:00', '')
+        ath_stat = number_format(data_group[max_index][idmax]) + ' - ' + (str(data_group[max_over_index][idmax])).replace('00:00:00', '')
         ath.append(ath_stat)
         chains.append(group)
 
     return kpi(chains, ath, title, '')
+
+
+
+#################################################################################################################
+################################################# MAIN CHARTS ###################################################
+#################################################################################################################
 
 
 def creal_graph():
@@ -93,10 +103,35 @@ def kpi_single(value, title, subtitle):
 
     div_output = (
         html.Span([
-            html.H3(number_format(float(value)), className = "values_single_kpi") if type(value) != str else html.Span(value, className = "values_single_kpi"),
+            html.H3(number_format(value), className = "values_single_kpi") if type(value) != str else html.Span(value, className = "values_single_kpi"),
         ], style = kpi_style
         ),
     )
+
+    counter = html.Div([
+        html.H1(children = title),
+        html.H3(children = subtitle),
+        html.Div(children = div_output)
+    ], className = "card_container"),
+
+    return counter
+
+def kpi_no_pics(chains, values, title, subtitle):
+
+    if len(chains) != len(values):
+        print("errorrrrr")
+        return None
+
+    div_output = []
+
+    for j in range(len(chains)):
+        div_output.append(
+            html.Span([
+                html.Span(chains[j], className = "chains_list_kpi"),
+                html.Span(number_format(values[j]), className = "values_list_kpi") if type(values[j]) != str else html.Span(values[j], className = "values_list_kpi"),
+            ], style = kpi_style
+            ),
+        )
 
     counter = html.Div([
         html.H1(children = title),
@@ -265,6 +300,8 @@ def distribution_bars(data, x, y, group_by, config, stack):
         showlegend = False
     )
 
+    fig_distribution.update_xaxes(tickangle = 45)
+
     if stack == 'stack':
         fig_distribution.update_layout(barmode='stack')
 
@@ -290,13 +327,14 @@ def pie_distribution(data, x, y, formated):
         paper_bgcolor = '#171730',
         font = dict(color = 'white'),
         hovermode = 'closest',
-        legend = {
-            'orientation': 'h',
-            'xanchor': 'center',
-            'yanchor': 'top',
-            'x': 0.5,
-            'y': 1.25
-        }
+        showlegend = False
+        #legend = {
+        #    'orientation': 'h',
+        #    'xanchor': 'center',
+        #    'yanchor': 'top',
+        #    'x': 0.5,
+        #    'y': 1.25
+        #}
     )
 
     return fig_pie
