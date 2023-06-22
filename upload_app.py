@@ -191,6 +191,7 @@ class Upload():
                 url = str(item['dune_id'])
                 self.data_by_url(url, item['file_name'])
 
+print(os.path.abspath(''))
 
 num_of_days = int(sys.argv[1])
 
