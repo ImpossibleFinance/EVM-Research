@@ -16,22 +16,28 @@ from dune_client.query import Query
 class Upload():
     def __init__(self, num_of_days):
 
+        self.BASE_PATH = (os.path.abspath(''))
+
         load_dotenv()
         self.API_KEY_DUNE = os.getenv('DUNE_API_KEY')
 
-        #f = open('config/chains_config.json')
-        f = open(os.path.abspath('config/chains_config.json'))
+        f = open(self.make_global_path('config/chains_config.json'))
         self.token_contracts = json.load(f)
         f.close()
 
-        #f2 = open('config/requests_config.json')
-        f2 = open(os.path.abspath('config/requests_config.json'))
+        f2 = open(self.make_global_path('config/requests_config.json'))
         self.requests_config = json.load(f2)
         f2.close()
 
 
         self.end_date = datetime.datetime.today().strftime('%Y-%m-%d') + ' 00:00:00'
         self.start_date = (datetime.datetime.today() - datetime.timedelta(int(num_of_days))).strftime('%Y-%m-%d') + ' 00:00:00'
+    
+    
+    def make_global_path(self,link):
+
+        return self.BASE_PATH + '/' + str(link)
+
 
     def get_price(self, token):
         url = 'https://api.coingecko.com/api/v3/coins/'+ token +'/market_chart'
@@ -69,7 +75,7 @@ class Upload():
 
             token = str(item['coingecko_tag'])
 
-            file_path = os.path.abspath('data/Prices.csv') #'data/Prices.csv'
+            file_path = self.make_global_path('data/Prices.csv') #'data/Prices.csv'
 
             if os.stat(file_path).st_size == 0 or os.stat(file_path).st_size == 1:
                 csv_data = pd.DataFrame()
@@ -132,7 +138,7 @@ class Upload():
 
         df = self.convert_Dune_to_DF(results)
 
-        file_path = os.path.abspath('data') + '/'
+        file_path = self.make_global_path('data') + '/'
 
         if name == 'data':
             df['DATE'] = (df['DATE'].str).replace(' 00:00:00.000 UTC','T00:00:00Z')
@@ -190,8 +196,6 @@ class Upload():
 
                 url = str(item['dune_id'])
                 self.data_by_url(url, item['file_name'])
-
-print(os.path.abspath(''))
 
 num_of_days = int(sys.argv[1])
 
