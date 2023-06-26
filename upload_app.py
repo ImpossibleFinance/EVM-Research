@@ -199,7 +199,7 @@ class Upload():
 
 num_of_days = int(sys.argv[1])
 
-set = int(sys.argv[2])
+set = str(sys.argv[2])
 
 print("Number of days: ", num_of_days)
 
