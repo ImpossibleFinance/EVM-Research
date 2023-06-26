@@ -14,9 +14,9 @@ from dune_client.query import Query
 
 
 class Upload():
-    def __init__(self, num_of_days):
+    def __init__(self, num_of_days, path):
 
-        self.BASE_PATH = (os.path.abspath(''))
+        self.BASE_PATH = path
 
         load_dotenv()
         self.API_KEY_DUNE = os.getenv('DUNE_API_KEY')
@@ -199,9 +199,17 @@ class Upload():
 
 num_of_days = int(sys.argv[1])
 
+set = int(sys.argv[2])
+
 print("Number of days: ", num_of_days)
 
-upload = Upload(num_of_days)
+if set == 'dev':
+    load_dotenv()
+    path = os.getenv('GLOBAL_PATH')
+else:
+    path = ''
+
+upload = Upload(num_of_days, path)
 
 upload.upload_prices()
 
