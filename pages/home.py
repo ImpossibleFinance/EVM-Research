@@ -4,11 +4,29 @@ from datetime import timedelta
 
 
 from scripts.Functions import *
-from config_app import *
+from config import *
 from scripts.distribution_by_day_of_week import *
 from scripts.gmt_distribution import *
 from scripts.active_addresses_distribution import *
 
+
+def find_ath(data, group_by, max_index, max_over_index, title):
+
+    groups = data[group_by].unique()
+    
+    ath = []
+    chains = []
+
+    for group in groups:
+        data_group = data[data[group_by] == group]
+
+        idmax = data_group[max_index].idxmax()
+
+        ath_stat = number_format(data_group[max_index][idmax]) + ' - ' + (str(data_group[max_over_index][idmax])).replace('00:00:00', '')
+        ath.append(ath_stat)
+        chains.append(group)
+
+    return create_ez_kpi(chains, ath, title, '', True)
 
 ###########################################################################
 ############################# Page ########################################
@@ -243,18 +261,27 @@ def render_transactions(date_range, chain):
         wallets_current = (wallets.loc[wallets['CHAIN'].isin(chain)])
         result_data = total_sum(data.loc[data['CHAIN'].isin(chain)], 'Value', 'CHAIN')
     else:
-        return creal_graph(), kpi([], [], 'Total & Trend Change', 'Month-over-Month'), kpi([], [], 'Active Wallets', 'Month-over-Month')
+        return creal_graph(), create_ez_kpi([], [], 'Total & Trend Change', 'Month-over-Month', True), create_ez_kpi([], [], 'Active Wallets', 'Month-over-Month', True)
     
     last_date = (max(current_data['Date(UTC)']))
 
     if date_range != 'All':
         current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
 
-    wallets_current = wallets_current.reset_index(drop=True)
+    wallets_current = wallets_current.reset_index(drop = True)
 
-    line_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Value', 'CHAIN', chains_config, False)
-    total_txs = kpi(result_data['CHAIN'], result_data['Value'], 'Total & Trend Change', 'Month-over-Month')
-    total_addresses = kpi(wallets_current['CHAIN'], wallets_current['TOTAL_NEW'], 'Total Active Wallets', 'Month-over-Month')
+    line_over_time = create_ez_line(
+            current_data, 
+            'Date(UTC)', 
+            'Value', 
+            None,
+            'CHAIN', 
+            chains_config,
+            False,
+            []
+        )
+    total_txs = create_ez_kpi(result_data['CHAIN'], result_data['Value'], 'Total & Trend Change', 'Month-over-Month', True)
+    total_addresses = create_ez_kpi(wallets_current['CHAIN'], wallets_current['TOTAL_NEW'].astype(float), 'Total Active Wallets', 'Month-over-Month', True)
 
     return line_over_time, total_txs, total_addresses
 
@@ -270,7 +297,7 @@ def render_transactions(date_range, chain):
     if chain != []:
         current_data = (data.loc[data['CHAIN'].isin(chain)])
     else:
-        return creal_graph(), kpi([], [], 'Most Active day', ''), kpi([], [], 'Most Passive day', '')
+        return creal_graph(), create_ez_kpi([], [], 'Most Active day', '', True), create_ez_kpi([], [], 'Most Passive day', '', True)
     
     last_date = (max(current_data['Date(UTC)']))
 
@@ -290,7 +317,7 @@ def render_transactions_by_gmt(date_range, chain):
     if chain != []:
         current_data = (gmt_hour_data.loc[gmt_hour_data['CHAIN'].isin(chain)])
     else:
-        return creal_graph(), kpi([], [], 'Active Time Zones', '')
+        return creal_graph(), create_ez_kpi([], [], 'Active Time Zones', '', True)
 
     if date_range != 'All':
         current_data = (current_data[current_data['RANGE'] == int(date_range)])
@@ -311,14 +338,23 @@ def render_transactions(date_range, chain):
     if chain != []:
         current_data = (data.loc[data['CHAIN'].isin(chain)])
     else:
-        return creal_graph(), kpi([], [], '', ''), creal_graph()
+        return creal_graph(), create_ez_kpi([], [], '', '', True), creal_graph()
     
     last_date = (max(current_data['Date(UTC)']))
 
     if date_range != 'All':
         current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
 
-    active_address_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Active addresses', 'CHAIN', chains_config, False)
+    active_address_over_time = create_ez_line(
+            current_data, 
+            'Date(UTC)', 
+            'Active addresses', 
+            None,
+            'CHAIN', 
+            chains_config, 
+            False,
+            []
+        )
     ath = find_ath(current_data, 'CHAIN', 'Active addresses', 'Date(UTC)', '')
     active_address_distribution = active_addresses((data.loc[data['CHAIN'].isin(chain)]), current_data)
 
@@ -339,18 +375,36 @@ def render_transactions(date_range, chain):
     if chain != []:
         current_data = (data.loc[data['CHAIN'].isin(chain)])
     else:
-        return creal_graph(), creal_graph(), kpi([], [], '', '')
+        return creal_graph(), creal_graph(), create_ez_kpi([], [], '', '', True)
     
     last_date = (max(current_data['Date(UTC)']))
 
     if date_range != 'All':
         current_data = (current_data[current_data['Date(UTC)'].between((last_date - timedelta(days = int(date_range))), last_date)])
 
-    block_time_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Block time', 'CHAIN', chains_config, True)
-    blocks_over_time = fig_line_over_time(current_data, 'Date(UTC)', 'Blocks count', 'CHAIN', chains_config, True)
+    block_time_over_time = create_ez_line(
+            current_data, 
+            'Date(UTC)', 
+            'Block time', 
+            None,
+            'CHAIN', 
+            chains_config, 
+            True,
+            []
+        )
+    blocks_over_time = create_ez_line(
+            current_data, 
+            'Date(UTC)', 
+            'Blocks count', 
+            None,
+            'CHAIN', 
+            chains_config, 
+            True,
+            []
+        )
     
     arr_blocks = total_sum(data.loc[data['CHAIN'].isin(chain)], 'Value', 'CHAIN')
-    total_blocks_count = kpi(arr_blocks['CHAIN'], arr_blocks['Blocks count'], '', '')
+    total_blocks_count = create_ez_kpi(arr_blocks['CHAIN'], arr_blocks['Blocks count'], '', '', True)
 
     return block_time_over_time, blocks_over_time, total_blocks_count
 
@@ -380,12 +434,21 @@ def render_prices(date_range, token):
     current_data = current_data.sort_values(by=['Date(UTC)'])
     current_data = current_data.reset_index(drop = True)
 
-    chart = fig_line_over_time_secondary_y(
-        current_data[current_data['TOKEN'] == 'Ethereum (ETH)'], 
+    tokens_data = current_data[current_data['TOKEN'] == 'Ethereum (ETH)'].merge(current_data[current_data['TOKEN'] == token], on = ['Date(UTC)'], how = 'left', indicator = False)
+
+    tokens_data = tokens_data.rename(columns = {
+        "PRICE_x": "Ethereum Price", 
+        "PRICE_y": "Token Price"
+    })
+
+    chart = create_ez_line(
+        tokens_data, 
         'Date(UTC)', 
-        'PRICE', 
-        'TOKEN', 
-        current_data[current_data['TOKEN'] == token], 
-        chains_config
+        'Ethereum Price', 
+        'Token Price',
+        None,
+        None, 
+        False,
+        [((list(filter(lambda xx:xx["chain_name"] == 'Ethereum', chains_config)))[0]["colors"]),((list(filter(lambda xx:xx["token"] == token, chains_config)))[0]["colors"])]
     )
     return chart

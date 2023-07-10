@@ -1,6 +1,4 @@
 from datetime import timedelta
-import numpy as np
-
 
 from scripts.Functions import *
 
@@ -23,8 +21,8 @@ def active_and_passive_day_of_week(data):
         chains.append(group)
         passive_days.append(data_group['Day of Week'][idmin])
 
-    fig_active = kpi(chains, active_days, 'Most Active day', '')
-    fig_passive = kpi(chains, passive_days, 'Most Passive day', '')
+    fig_active = create_ez_kpi(chains, active_days, 'Most Active day', '', True)
+    fig_passive = create_ez_kpi(chains, passive_days, 'Most Passive day', '', True)
 
     return fig_active, fig_passive
 
@@ -60,6 +58,15 @@ def transactions_by_day_of_week(data, range, config):
 
     fig_active, fig_passive = active_and_passive_day_of_week(A)
 
-    fig_by_day_of_week = distribution_bars(A, 'Day of Week', 'Value', 'CHAIN', config, False)
+    fig_by_day_of_week = create_ez_bar(
+            A, 
+            'Day of Week', 
+            'Value',
+            None,
+            'CHAIN', 
+            config, 
+            False,
+            []
+        )
 
     return fig_by_day_of_week, fig_active, fig_passive

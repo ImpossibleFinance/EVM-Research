@@ -1,5 +1,4 @@
 from datetime import timedelta
-import plotly.graph_objs as go
 
 from scripts.Functions import *
 

@@ -1,6 +1,5 @@
-import json
 
-from scripts.Functions import distribution_bars, kpi
+from scripts.Functions import *
 
 
 def data_gmt():
@@ -73,7 +72,16 @@ def distribution_by_gmt(current_data, chains_config):
 
     gmt_time_zones = data_gmt()
 
-    fig_distribution = distribution_bars(current_data, 'GMT hour', 'Avg # of transactions', 'CHAIN', chains_config, False)
+    fig_distribution = create_ez_bar(
+            current_data, 
+            'GMT hour', 
+            'Avg # of transactions',
+            None,
+            'CHAIN', 
+            chains_config,
+            False,
+            []
+        )
 
     gmt_hours, chains = active_gmt_hour(current_data)
 
@@ -82,4 +90,4 @@ def distribution_by_gmt(current_data, chains_config):
             if hour >= int((item['hours']).split("-")[0]) and hour <= int((item['hours']).split("-")[1]):
                 category_arr.append(item['zone'])
 
-    return fig_distribution, kpi(chains, category_arr, '', '')
+    return fig_distribution, create_ez_kpi(chains, category_arr, '', '', True)

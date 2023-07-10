@@ -28,7 +28,8 @@ All the libraries that were used are in the ***requirements.txt*** file
 
 1. Create `.env` file
 2. Put your Dune API key there like `DUNE_API_KEY = "YOUR_API_KEY"`
-3. Make a `csv_data` repository
+3. Put global path to your repo, like `GLOBAL_PATH = "/home/.../EVM-Research"`
+4. Make a `csv_data` repository
 
 ### Run 🤖
 
