@@ -36,8 +36,10 @@ class Upload():
     
     def make_global_path(self,link):
 
-        return self.BASE_PATH + '/' + str(link)
-
+        if self.BASE_PATH != '':
+            return self.BASE_PATH + '/' + str(link)
+        else:
+            return link
 
     def get_price(self, token):
         url = 'https://api.coingecko.com/api/v3/coins/'+ token +'/market_chart'
