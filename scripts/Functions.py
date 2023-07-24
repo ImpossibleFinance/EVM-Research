@@ -155,8 +155,8 @@ class KPI():
                 div_output.append(
                     html.Span([
                         html.Img(src = "assets/" + (self.column_A[j]).lower() + ".png", height = 22),
-                        html.Span(self.column_A[j], className = "chains_list_kpi"),
-                        html.Span(number_format(self.column_B[j]), className = "values_list_kpi") if type(self.column_B[j]) != str else html.Span(self.column_B[j], className = "values_list_kpi"),
+                        html.Span(self.column_A[j], className = "a_list_kpi"),
+                        html.Span(number_format(self.column_B[j]), className = "b_list_kpi") if type(self.column_B[j]) != str else html.Span(self.column_B[j], className = "b_list_kpi"),
                     ], style = kpi_style
                     ),
                 )
@@ -164,8 +164,8 @@ class KPI():
             else:
                 div_output.append(
                     html.Span([
-                        html.Span(self.column_A[j], className = "chains_list_kpi"),
-                        html.Span(number_format(self.column_B[j]), className = "values_list_kpi") if type(self.column_B[j]) != str else html.Span(self.column_B[j], className = "values_list_kpi"),
+                        html.Span(self.column_A[j], className = "a_list_kpi"),
+                        html.Span(number_format(self.column_B[j]), className = "b_list_kpi") if type(self.column_B[j]) != str else html.Span(self.column_B[j], className = "b_list_kpi"),
                     ], style = kpi_style
                     ),
                 )
