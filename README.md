@@ -30,6 +30,7 @@ All the libraries that were used are in the ***requirements.txt*** file
 2. Put your Dune API key there like `DUNE_API_KEY = "YOUR_API_KEY"`
 3. Put global path to your repo, like `GLOBAL_PATH = "/home/.../EVM-Research"`
 4. Make a `csv_data` repository
+5. Put your global path to the directory like `GLOBAL_PATH = "..."`
 
 ### Run 🤖
 
@@ -44,3 +45,14 @@ Start the UI:
 ```basg
 gunicorn app:server -b:8080
 ```
+
+
+To check if there is all good or not (missed any dates):
+```basg
+check_fallout.py
+```
+
+
+### Some snapshots 📸
+
+![image](https://github.com/0xKARTOD/EVM-Research/assets/100310858/a52eadb6-3df5-4cb8-b187-79e8766cebbb)
